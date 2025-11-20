@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="spot">
+    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+    <xacro:arg name="hardware_interface" default="mock" />
+    <xacro:arg name="arm" default="true" />
+    
+    <!-- Import spot urdf file -->
+    <xacro:include filename="$(find spot_description)/urdf/spot.urdf.xacro" />
+    
+    <!-- Import control_xacro -->
+    <xacro:include filename="$(find spot_moveit_config)/config/spot.ros2_control.xacro" />
+    
+    <xacro:spot_ros2_control 
+        name="spot_ros2_control" 
+        initial_positions_file="$(arg initial_positions_file)" 
+        hardware_interface="$(arg hardware_interface)"/>
+</robot>

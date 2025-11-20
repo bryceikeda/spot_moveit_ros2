@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="spot_behavior_tree" exec="bt_executor" output="screen">
+    <param from="$(find-pkg-share spot_behavior_tree)/config/bt_executor.yaml"/>
+  </node>
+
+</launch>

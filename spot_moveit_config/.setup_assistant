@@ -1,0 +1,21 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: spot_description
+    relative_path: urdf/spot.urdf.xacro
+  srdf:
+    relative_path: config/spot.srdf
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity

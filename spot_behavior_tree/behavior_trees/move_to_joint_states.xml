@@ -1,0 +1,16 @@
+ <root BTCPP_format="4" >
+     <BehaviorTree ID="MoveToJointStates">
+        <Sequence name="root">
+            <SetupMoveGroup                 planning_group_name="arm" move_group="{move_group}"/>
+            <CreateJointState               joint_names="arm_sh0;arm_sh1;arm_el0;arm_el1;arm_wr0;arm_wr1" 
+                                            positions="1.36136;-1.90241;2.0944;-1.6057;1.36136;1.78024"
+                                            joint_state="{joint_state}"/>
+            <SetMoveItJointValueTarget      joint_state="{joint_state}" move_group="{move_group}"/>
+            <PlanMoveItTarget               robot_trajectory_msg="{robot_trajectory_msg}" move_group="{move_group}" />
+            <ExecuteMoveItTrajectory        action_name="execute_trajectory" robot_trajectory_msg="{robot_trajectory_msg}"/>
+            <SetMoveItJointValueTarget      joint_values="-1.36136;-1.90241;2.0944;1.6057;1.36136;-1.78024" move_group="{move_group}"/>
+            <PlanMoveItTarget               robot_trajectory_msg="{robot_trajectory_msg}" move_group="{move_group}" />
+            <ExecuteMoveItTrajectory        action_name="execute_trajectory" robot_trajectory_msg="{robot_trajectory_msg}"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>

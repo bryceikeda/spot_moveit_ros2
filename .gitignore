@@ -1,0 +1,7 @@
+# Bytecode cache
+__pycache__/
+**/__pycache__/
+
+# Compiled Python files
+*.pyc
+*.pyo

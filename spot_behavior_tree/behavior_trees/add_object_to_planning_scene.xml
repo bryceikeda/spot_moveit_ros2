@@ -1,0 +1,50 @@
+<root BTCPP_format="4">
+    <TreeNodeParams>
+        <Param name="object_id"/>
+        <Param name="dimensions"/>
+        <Param name="position_xyz"/>
+        <Param name="orientation_xyzw"/>
+        <Param name="reference_frame"/>
+    </TreeNodeParams>
+
+  <BehaviorTree ID="AddObjectToPlanningScene">
+    <Sequence name="root">
+
+      <CreateSolidPrimitiveBox
+        dimensions="{dimensions}"
+        solid_primitive="{solid_primitive}"/>
+
+      <CreateStampedPose
+        reference_frame="{reference_frame}"
+        position_xyz="{position_xyz}"
+        orientation_xyzw="{orientation_xyzw}"
+        stamped_pose="{stamped_pose}"/>
+
+      <CreateCollisionObjectFromSolidPrimitive
+        solid_primitive="{solid_primitive}"
+        pose="{stamped_pose}"
+        object_id="{object_id}"
+        collision_object="{collision_object}"/>
+
+      <AddCollisionObjectToPlanningScene
+        topic_name="planning_scene"
+        collision_object="{collision_object}"/>
+
+      <RetryUntilSuccessful num_attempts="3">
+        <Sequence>
+
+          <GetCurrentPlanningScene
+            service_name="get_planning_scene"
+            planning_scene_msg="{planning_scene_msg}"/>
+
+          <IsCollisionObjectInPlanningScene
+            collision_object_name="{object_id}"
+            planning_scene="{planning_scene_msg}"/>
+
+        </Sequence>
+      </RetryUntilSuccessful>
+
+    </Sequence>
+
+  </BehaviorTree>
+</root>

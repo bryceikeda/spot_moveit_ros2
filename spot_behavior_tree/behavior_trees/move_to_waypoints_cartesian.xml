@@ -1,0 +1,23 @@
+ <root BTCPP_format="4" >
+     <BehaviorTree ID="MoveToWaypointsCartesian">
+        <Sequence name="root">
+            <SetupMoveGroup             planning_group_name="arm" move_group="{move_group}"/>
+            <SetupVisualTools           move_group="{move_group}" base_frame="body" visual_tools_topic="moveit_visual_tools" visual_tools="{visual_tools}"/>
+            <CreateStampedPose          reference_frame="body" position_xyz="0.55;-0.05;0.8" orientation_xyzw="0;0;0;1" stamped_pose="{stamped_pose}"/>
+            <SetMoveItPoseStampedTarget stamped_pose="{stamped_pose}" move_group="{move_group}"/>
+            <PlanMoveItTarget           robot_trajectory_msg="{robot_trajectory_msg}" move_group="{move_group}"/>
+            <ExecuteMoveItTrajectory    action_name="execute_trajectory" robot_trajectory_msg="{robot_trajectory_msg}"/>
+            <AddPoseStampedToVector     input="{stamped_pose}" vector="{pose_stamped_vector}"/>
+            <CreateStampedPose          reference_frame="body" position_xyz="0.55;-0.05;0.6" orientation_xyzw="0;0;0;1" stamped_pose="{stamped_pose2}"/>
+            <AddPoseStampedToVector     input="{stamped_pose2}" vector="{pose_stamped_vector}"/>
+            <CreateStampedPose          reference_frame="body" position_xyz="0.55;-0.25;0.6" orientation_xyzw="0;0;0;1" stamped_pose="{stamped_pose3}"/>
+            <AddPoseStampedToVector     input="{stamped_pose3}" vector="{pose_stamped_vector}"/>
+            <CreateStampedPose          reference_frame="body" position_xyz="0.35;-0.05;0.8" orientation_xyzw="0;0;0;1" stamped_pose="{stamped_pose4}"/>
+            <AddPoseStampedToVector     input="{stamped_pose4}" vector="{pose_stamped_vector}"/>
+            <PlanMoveItCartesianPath    move_group="{move_group}" stamped_waypoints="{pose_stamped_vector}" robot_trajectory_msg="{robot_trajectory_msg2}"/>
+            <VisualizeWaypoints         waypoints="{pose_stamped_vector}" visual_tools="{visual_tools}"/>
+            <ExecuteMoveItTrajectory    action_name="execute_trajectory" robot_trajectory_msg="{robot_trajectory_msg2}"/>
+            <ClearMarkers               visual_tools="{visual_tools}"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>
