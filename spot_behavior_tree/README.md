@@ -1,6 +1,6 @@
 # Behaviors
 
-This package demonstrates different spot behaviors using MoveIt. Documentation of the derived class methods for each ROS interface type can be found [here](../behaviortree_ros2/ros_behavior_wrappers.md).
+This package demonstrates different spot behaviors using MoveIt with both the [BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP.git) and [BehaviorTree.ROS2](https://github.com/BehaviorTree/BehaviorTree.ROS2.git) libraries. 
 
 # TreeExecutionServer
 
@@ -27,10 +27,8 @@ As the Server starts up it will print out the name of the ROS Action followed by
 [bt_action_server]: Loaded ROS Plugin: create_stamped_pose_plugin.so
 [bt_action_server]: Loaded ROS Plugin: set_moveit_joint_value_target_plugin.so
 [bt_action_server]: Loaded ROS Plugin: visualize_waypoints_plugin.so
-
 ```
 To call the Action Server from the command line:
 ``` bash
-ros2 action send_goal /behavior_server btcpp_ros2_interfaces/action/ExecuteTree "{target_tree: bt1}"
+ros2 action send_goal /behavior_server btcpp_ros2_interfaces/action/ExecuteTree "{target_tree: MoveToPose}"
 ```
-
