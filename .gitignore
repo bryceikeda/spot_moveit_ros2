@@ -5,3 +5,5 @@ __pycache__/
 # Compiled Python files
 *.pyc
 *.pyo
+
+/spot_simple_controllers/config/spot_parameters.yaml
