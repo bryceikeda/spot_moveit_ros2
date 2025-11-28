@@ -1,0 +1,30 @@
+ <root BTCPP_format="4" >
+     <BehaviorTree ID="MoveToPoseAroundObstacle">
+        <Sequence name="root">
+            <AddRosNodeToBlackboard topic_name="node_to_blackboard"/>
+            <SetupMoveGroup             planning_group_name="arm" move_group="{move_group}"/>
+            <SetupVisualTools           move_group="{move_group}" base_frame="body" visual_tools_topic="moveit_visual_tools" visual_tools="{visual_tools}" />
+            <SubTree    ID="MoveToPoseTemplate"
+                        move_group="{move_group}"
+                        position_xyz="0.6;0;0.25"
+                        orientation_xyzw="0;.707;0;.707"
+                        reference_frame="body"
+                        visual_tools="{visual_tools}"
+            />
+            <SubTree    ID="AddObjectToPlanningSceneTemplate"
+                        object_id="box1"
+                        dimensions="0.1;1.5;0.5"
+                        position_xyz=".825;0;-.1"
+                        orientation_xyzw="0;0;0;1"
+                        reference_frame="body"
+            />
+            <SubTree    ID="MoveToPoseTemplate"
+                        move_group="{move_group}"
+                        position_xyz=".975;0;0.25"
+                        orientation_xyzw="0;.707;0;.707"
+                        reference_frame="body"
+                        visual_tools="{visual_tools}"
+            />
+        </Sequence>
+     </BehaviorTree>
+ </root>

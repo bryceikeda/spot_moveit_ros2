@@ -1,6 +1,7 @@
  <root BTCPP_format="4" >
-     <BehaviorTree ID="MoveToWaypointsCartesian">
+     <BehaviorTree ID="CartesianMovementToWaypoints">
         <Sequence name="root">
+            <AddRosNodeToBlackboard topic_name="node_to_blackboard"/>
             <SetupMoveGroup             planning_group_name="arm" move_group="{move_group}"/>
             <SetupVisualTools           move_group="{move_group}" base_frame="body" visual_tools_topic="moveit_visual_tools" visual_tools="{visual_tools}"/>
             <CreateStampedPose          reference_frame="body" position_xyz="0.55;-0.05;0.8" orientation_xyzw="0;0;0;1" stamped_pose="{stamped_pose}"/>

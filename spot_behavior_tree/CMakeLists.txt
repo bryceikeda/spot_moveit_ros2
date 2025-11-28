@@ -88,6 +88,29 @@ list(APPEND plugin_libs is_collision_object_in_planning_scene_plugin)
 add_library(get_current_planning_scene_plugin SHARED plugins/action/get_current_planning_scene.cpp)
 list(APPEND plugin_libs get_current_planning_scene_plugin)
 
+add_library(visualize_trajectory_plugin SHARED plugins/action/visualize_trajectory.cpp)
+list(APPEND plugin_libs visualize_trajectory_plugin)
+
+add_library(add_ros_node_to_blackboard_plugin SHARED plugins/action/add_ros_node_to_blackboard.cpp)
+list(APPEND plugin_libs add_ros_node_to_blackboard_plugin)
+
+add_library(set_moveit_named_target_plugin SHARED plugins/action/set_moveit_named_target.cpp)
+list(APPEND plugin_libs set_moveit_named_target_plugin)
+
+add_library(attach_object_to_link_plugin SHARED plugins/action/attach_object_to_link.cpp)
+list(APPEND plugin_libs attach_object_to_link_plugin)
+
+add_library(detach_object_from_link_plugin SHARED plugins/action/detach_object_from_link.cpp)
+list(APPEND plugin_libs detach_object_from_link_plugin)
+
+add_library(initialize_motion_constraints_plugin SHARED plugins/action/initialize_motion_constraints.cpp)
+list(APPEND plugin_libs initialize_motion_constraints_plugin)
+
+add_library(append_orientation_constraint_plugin SHARED plugins/action/append_orientation_constraint.cpp)
+list(APPEND plugin_libs append_orientation_constraint_plugin)
+
+add_library(set_moveit_planning_time_plugin SHARED plugins/action/set_moveit_planning_time.cpp)
+list(APPEND plugin_libs set_moveit_planning_time_plugin)
 
 foreach(bt_plugin ${plugin_libs})
   target_include_directories(${bt_plugin}

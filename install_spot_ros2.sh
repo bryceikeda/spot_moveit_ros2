@@ -32,10 +32,14 @@ fi
 if ! [[ $(ls /etc/ros/rosdep/sources.list.d/*default.list 2> /dev/null) ]]; then
   sudo rosdep init
 fi
-source /opt/ros/humble/setup.bash && rosdep update && rosdep install --from-paths ./ --ignore-src -y -r --rosdistro=humble
+source /opt/ros/humble/setup.bash && rosdep update && rosdep install --from-paths ../ --ignore-src -y -r --rosdistro=humble
 
 # Install Qt5UiTools
 sudo apt-get install -y qttools5-dev
+
+# Install MoveIt and visualizer
+sudo apt-get install ros-humble-moveit
+sudo apt-get install ros-humble-moveit-visual-tools
 
 # Install the dist-utils
 sudo apt-get install -y python3-distutils

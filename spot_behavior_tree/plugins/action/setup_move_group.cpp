@@ -14,7 +14,8 @@ namespace SetupMoveGroup{
     {
         if (!getInput<std::string>("planning_group_name", planning_group_name))
             throw BT::RuntimeError("SetupMoveGroup -> Missing required input [planning_group_name]");
-
+        
+        rclcpp::Node::SharedPtr node_ptr;
         if (!config().blackboard->rootBlackboard()->get("node", node_ptr))
             throw BT::RuntimeError("SetupMoveGroup -> Missing rclcpp::Node::SharedPtr 'node' in blackboard");
 

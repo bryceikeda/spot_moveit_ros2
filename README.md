@@ -25,6 +25,10 @@ source install/setup.bash
 * [`spot_simple_controllers`](spot_simple_controllers): Core wrapper for interfacing between MoveIt 2 and the [spot_ros2](https://github.com/bdaiinstitute/spot_ros2) package. 
 * [`demo`](demo): Examples of how to control Spot via MoveIt. 
 * [`spot_moveit_config`](spot_moveit_config): The Spot MoveIt configuration files. 
+* [`spot_behavior_tree`](spot_behavior_tree): Control the spot robot via MoveIt and a behavior tree 
+
+## Running these packages
+See [`demo`](demo) for examples of how to control Spot via MoveIt. See [`spot_behavior_tree`](spot_behavior_tree) if you would like to control the robot using a behavior tree. 
 
 ## Acknowledgments
 This repository was adapted from the ROS1 [spot_skills](https://github.com/Benned-H/spot_skills/tree/main) package written by Benned Hedegaard. 

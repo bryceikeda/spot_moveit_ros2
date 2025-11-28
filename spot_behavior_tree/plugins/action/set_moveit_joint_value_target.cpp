@@ -3,19 +3,19 @@
 
 BT_REGISTER_NODES(factory)
 {
-  SetMoveitJointValueTarget::RegisterNodes(factory);
+  SetMoveItJointValueTarget::RegisterNodes(factory);
 }
 
-namespace SetMoveitJointValueTarget{
-SetMoveitJointValueTarget::SetMoveitJointValueTarget(const std::string& name, const BT::NodeConfig& config)
+namespace SetMoveItJointValueTarget{
+SetMoveItJointValueTarget::SetMoveItJointValueTarget(const std::string& name, const BT::NodeConfig& config)
   : BT::SyncActionNode(name, config)
 {}
 
-BT::NodeStatus SetMoveitJointValueTarget::tick()
+BT::NodeStatus SetMoveItJointValueTarget::tick()
 {
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group;
     if (!getInput<std::shared_ptr<moveit::planning_interface::MoveGroupInterface>>("move_group", move_group))
-        throw BT::RuntimeError("SetMoveitJointValueTarget -> Missing required input [move_group]");
+        throw BT::RuntimeError("SetMoveItJointValueTarget -> Missing required input [move_group]");
 
     bool within_bounds; 
 
@@ -25,7 +25,7 @@ BT::NodeStatus SetMoveitJointValueTarget::tick()
         within_bounds = move_group->setJointValueTarget(joint_state);
         if (!within_bounds)
         {
-            RCLCPP_WARN(rclcpp::get_logger("SetMoveitJointValueTarget"), "Target joint position(s) were outside of limits; planning will clamp values.");
+            RCLCPP_WARN(rclcpp::get_logger("SetMoveItJointValueTarget"), "Target joint position(s) were outside of limits; planning will clamp values.");
         }
         return BT::NodeStatus::SUCCESS;
     }
@@ -36,7 +36,7 @@ BT::NodeStatus SetMoveitJointValueTarget::tick()
         within_bounds = move_group->setJointValueTarget(joint_values);
         if (!within_bounds)
         {
-            RCLCPP_WARN(rclcpp::get_logger("SetMoveitJointValueTarget"), "Target joint position(s) were outside of limits; planning will clamp values.");
+            RCLCPP_WARN(rclcpp::get_logger("SetMoveItJointValueTarget"), "Target joint position(s) were outside of limits; planning will clamp values.");
         }
         return BT::NodeStatus::SUCCESS;
     }
@@ -44,7 +44,7 @@ BT::NodeStatus SetMoveitJointValueTarget::tick()
     return BT::NodeStatus::FAILURE;
 }
 
-BT::PortsList SetMoveitJointValueTarget::providedPorts()
+BT::PortsList SetMoveItJointValueTarget::providedPorts()
 {
     return {
         BT::InputPort<std::shared_ptr<moveit::planning_interface::MoveGroupInterface>>("move_group"),

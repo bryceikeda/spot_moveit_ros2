@@ -1,6 +1,7 @@
 #include "spot_behavior_tree/plugins/action/setup_visual_tools.h"
 #include <rclcpp/rclcpp.hpp>
 #include <moveit/move_group_interface/move_group_interface.h>
+#include <moveit_msgs/msg/display_robot_state.h>
 
 BT_REGISTER_NODES(factory)
 {
@@ -26,13 +27,11 @@ namespace SetupVisualTools{
         std::string visual_tools_topic;
         if (!getInput<std::string>("visual_tools_topic", visual_tools_topic))
             throw BT::RuntimeError("SetupVisualTools -> Missing required input [visual_tools_topic]");
-        
 
         rclcpp::Node::SharedPtr node_ptr;
         if (!config().blackboard->rootBlackboard()->get("node", node_ptr))
             throw BT::RuntimeError("SetupVisualTools -> Missing rclcpp::Node::SharedPtr 'node' in blackboard");
 
-        
         visual_tools_ = std::make_shared<moveit_visual_tools::MoveItVisualTools>(node_ptr, base_frame, "/" + visual_tools_topic);
 
         visual_tools_->deleteAllMarkers();   // Clear any existing markers in RViz
@@ -50,7 +49,7 @@ namespace SetupVisualTools{
             BT::InputPort<std::shared_ptr<moveit::planning_interface::MoveGroupInterface>>("move_group"),
             BT::InputPort<std::string>("base_frame"),
             BT::InputPort<std::string>("visual_tools_topic"),
-            BT::OutputPort<moveit_visual_tools::MoveItVisualToolsPtr>("visual_tools")
+            BT::OutputPort<moveit_visual_tools::MoveItVisualToolsPtr>("visual_tools"),
         };
     }
 }

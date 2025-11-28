@@ -17,7 +17,6 @@ class SetupMoveGroup : public BT::SyncActionNode
 
     private:
       std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group;
-      rclcpp::Node::SharedPtr node_ptr;
       std::string planning_group_name;
 };
 

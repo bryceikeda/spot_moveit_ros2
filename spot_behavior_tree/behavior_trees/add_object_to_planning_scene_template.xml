@@ -7,7 +7,7 @@
         <Param name="reference_frame"/>
     </TreeNodeParams>
 
-  <BehaviorTree ID="AddObjectToPlanningScene">
+  <BehaviorTree ID="AddObjectToPlanningSceneTemplate">
     <Sequence name="root">
 
       <CreateSolidPrimitiveBox

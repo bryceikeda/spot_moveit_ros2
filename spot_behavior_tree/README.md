@@ -2,11 +2,24 @@
 
 This package demonstrates different spot behaviors using MoveIt with both the [BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP.git) and [BehaviorTree.ROS2](https://github.com/BehaviorTree/BehaviorTree.ROS2.git) libraries. 
 
+## Running on the physical robot
+Make sure the robot is in an open space if running on the physical robot.
+
+After this, put your login credentials into a configuration file yaml ([spot_parameters.yaml](../spot_simple_controllers/config/spot_parameters.yaml)). The driver and controllers can be started via the following launchfile:
+```bash
+ros2 launch spot_simple_controllers spot_bringup.launch.py
+```
+
+## Running in simulation (Manipulation only)
+```bash
+ros2 launch spot_moveit_config moveit_spot.launch.py
+```
+
 # TreeExecutionServer
 
 To start the Execution Server that load a list of plugins and BehaviorTrees from the [`bt_executor.yaml`](config/bt_executor.yaml) file:
 ``` bash
-ros2 launch spot_behavior_tree bt_executor.launch.xml
+ros2 launch spot_behavior_tree bt_executor.launch.py
 ```
 
 > *NOTE:* For documentation on the `yaml` parameters please see [bt_executor_parameters.md](config/bt_executor_parameters.md).

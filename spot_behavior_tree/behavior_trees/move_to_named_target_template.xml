@@ -1,0 +1,17 @@
+ <root BTCPP_format="4" >
+    <TreeNodeParams>
+        <Param name="move_group"/>
+        <Param name="target_name"/>
+        <Param name="visual_tools"/>
+    </TreeNodeParams>
+     <BehaviorTree ID="MoveToNamedTargetTemplate">
+        <Sequence name="root">
+            <SetMoveItNamedTarget       target_name="{target_name}" move_group="{move_group}" />
+            <PlanMoveItTarget           robot_trajectory_msg="{robot_trajectory_msg}" move_group="{move_group}"/>
+            <VisualizeTrajectory        robot_trajectory_msg="{robot_trajectory_msg}" move_group="{move_group}" visual_tools="{visual_tools}"/>
+            <ExecuteMoveItTrajectory    action_name="execute_trajectory" robot_trajectory_msg="{robot_trajectory_msg}"/>
+            <ClearMarkers               visual_tools="{visual_tools}"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>
+ 
