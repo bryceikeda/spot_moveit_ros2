@@ -9,7 +9,7 @@ This repository is supported for use with Ubuntu 22.04 and [ROS 2 Humble](https:
 Set up your ROS 2 workspace, and clone the repository in the `src` directory:
 ```bash
 mkdir <ROS workspace> && cd <ROS workspace>
-git clone https://github.com/bryceikeda/spot_moveit2.git src
+git clone https://github.com/bryceikeda/spot_moveit_ros2.git src
 ```
 
 Next, run the following script to install the necessary Boston Dynamics packages (both Python and C++) and ROS dependencies.

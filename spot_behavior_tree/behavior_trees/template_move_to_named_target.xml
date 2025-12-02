@@ -4,7 +4,7 @@
         <Param name="target_name"/>
         <Param name="visual_tools"/>
     </TreeNodeParams>
-     <BehaviorTree ID="MoveToNamedTargetTemplate">
+     <BehaviorTree ID="TemplateMoveToNamedTarget">
         <Sequence name="root">
             <SetMoveItNamedTarget       target_name="{target_name}" move_group="{move_group}" />
             <PlanMoveItTarget           robot_trajectory_msg="{robot_trajectory_msg}" move_group="{move_group}"/>
