@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     // trajectories, and markers in RViz.
     namespace rvt = rviz_visual_tools;
     moveit_visual_tools::MoveItVisualTools visual_tools(
-        move_group_node, "body", "demo", move_group.getRobotModel());
+        move_group_node, "body", "moveit_visual_tools", move_group.getRobotModel());
 
     visual_tools.deleteAllMarkers();   // Clear any existing markers in RViz
     visual_tools.loadRemoteControl();  // Enable "Next" button control from RViz GUI

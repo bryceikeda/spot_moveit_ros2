@@ -4,3 +4,14 @@ This package provides the core wrapper for interfacing between MoveIt 2 and the 
 ```bash
 ros2 launch spot_simple_controllers spot_bringup.launch.py
 ```
+
+# Service calls
+Certain functions can also be called via the command line using service calls. These include the following: 
+
+```bash
+ros2 service call "spot/stand" std_srvs/srv/Trigger {}
+ros2 service call "spot/sit" std_srvs/srv/Trigger {}
+ros2 service call "spot/deploy_arm" std_srvs/srv/Trigger {}
+ros2 service call "spot/stow_arm" std_srvs/srv/Trigger {}
+ros2 service call "spot/shutdown" std_srvs/srv/Trigger {}
+```

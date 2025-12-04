@@ -45,3 +45,10 @@ To call the Action Server from the command line:
 ``` bash
 ros2 action send_goal /behavior_server btcpp_ros2_interfaces/action/ExecuteTree "{target_tree: MoveToPose}"
 ```
+
+* [`MoveToPose`](behavior_trees/move_to_pose.xml): Move Spot's arm to a target pose. 
+* [`MoveToJointSpaceGoal`](behavior_trees/move_to_joint_space_goal.xml): Move Spot's arm to a joint space goal. 
+* [`CartesianMovementToWaypoints`](behavior_trees/cartesian_movement_to_waypoints.xml): Move Spot's arm to three waypoints using cartesian movements. 
+* [`PathConstrainedMovement`](behavior_trees/path_constrained_movement.xml): Move Spot's arm to a target pose while adhering to specific path constraints.
+* [`MoveToPoseAroundObstacle`](behavior_trees/move_to_pose_around_obstacle.xml): Move Spot's arm to a target pose around an obstacle.
+* [`MoveObjectOverObstacle`](behavior_trees/move_object_over_obstacle.xml): Grab an object, move Spot's arm to a target pose around an obstacle, then let go of the object. 

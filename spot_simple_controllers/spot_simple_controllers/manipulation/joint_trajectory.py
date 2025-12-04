@@ -39,7 +39,9 @@ class JointsPoint:
         num_pos = len(self.positions_rad)
         num_vel = len(self.velocities_radps)
 
-        assert num_pos == num_vel, f"JointsPoint had {num_pos} positions but {num_vel} velocities."
+        assert (
+            num_pos == num_vel
+        ), f"JointsPoint had {num_pos} positions but {num_vel} velocities."
 
     @classmethod
     def from_proto(cls, point_proto: ArmJointTrajectoryPoint) -> JointsPoint:
@@ -67,14 +69,18 @@ class JointsPoint:
         return cls(angles_rad, velocities_radps, time_since_start_s)
 
     @classmethod
-    def from_ros_msg(cls, point_msg: trajectory_msgs.msg.JointTrajectoryPoint) -> JointsPoint:
+    def from_ros_msg(
+        cls, point_msg: trajectory_msgs.msg.JointTrajectoryPoint
+    ) -> JointsPoint:
         """Construct a JointsPoint from an equivalent ROS message.
 
         :param point_msg: ROS message representing an arm's joints' state
 
         :returns: JointsPoint constructed based on the given ROS message
         """
-        time_from_start_s = point_msg.time_from_start.sec + point_msg.time_from_start.nanosec * 1e-9
+        time_from_start_s = (
+            point_msg.time_from_start.sec + point_msg.time_from_start.nanosec * 1e-9
+        )
         return cls(point_msg.positions, point_msg.velocities, time_from_start_s)
 
     @classmethod
@@ -121,7 +127,9 @@ class JointTrajectory:
         return cls(timestamp, points, joint_names)
 
     @classmethod
-    def from_ros_msg(cls, trajectory_msg: trajectory_msgs.msg.JointTrajectory) -> JointTrajectory:
+    def from_ros_msg(
+        cls, trajectory_msg: trajectory_msgs.msg.JointTrajectory
+    ) -> JointTrajectory:
         """Construct a JointTrajectory from an equivalent ROS message.
 
         :param      trajectory_msg    Trajectory of joint points as a ROS message
@@ -142,22 +150,32 @@ class JointTrajectory:
         Reorders the joint angles in the trajectory according to the Spot SDK order.
         """
         # Ensure the joint names are either all Spot SDK or all URDF
-        using_sdk_names = all(name in SPOT_SDK_ARM_JOINT_NAMES for name in self.joint_names)
-        using_urdf_names = all(name in SPOT_URDF_ARM_JOINT_NAMES for name in self.joint_names)
-        assert using_sdk_names or using_urdf_names, (
-            f"Cannot recognize arm joint names: {self.joint_names}."
+        using_sdk_names = all(
+            name in SPOT_SDK_ARM_JOINT_NAMES for name in self.joint_names
         )
+        using_urdf_names = all(
+            name in SPOT_URDF_ARM_JOINT_NAMES for name in self.joint_names
+        )
+        assert (
+            using_sdk_names or using_urdf_names
+        ), f"Cannot recognize arm joint names: {self.joint_names}."
 
-        def reorder_joint_values(points: list[JointsPoint], index_mapping: list[int]) -> None:
+        def reorder_joint_values(
+            points: list[JointsPoint], index_mapping: list[int]
+        ) -> None:
             """Reorder the joint values in the given list of JointsPoints."""
             for point in points:
                 point.positions_rad = [point.positions_rad[i] for i in index_mapping]
-                point.velocities_radps = [point.velocities_radps[i] for i in index_mapping]
+                point.velocities_radps = [
+                    point.velocities_radps[i] for i in index_mapping
+                ]
 
         # If using URDF names, reorder to match the Spot SDK order
         if using_urdf_names:
             urdf_to_sdk_indices = [
-                SPOT_SDK_ARM_JOINT_NAMES.index(MAP_JOINT_NAMES_URDF_TO_SPOT_SDK[urdf_name])
+                SPOT_SDK_ARM_JOINT_NAMES.index(
+                    MAP_JOINT_NAMES_URDF_TO_SPOT_SDK[urdf_name]
+                )
                 for urdf_name in self.joint_names
             ]
             reorder_joint_values(self.points, urdf_to_sdk_indices)
@@ -165,7 +183,8 @@ class JointTrajectory:
         # If using Spot SDK names, reorder the joint values only if necessary
         if using_sdk_names and self.joint_names != SPOT_SDK_ARM_JOINT_NAMES:
             sdk_indices = [
-                SPOT_SDK_ARM_JOINT_NAMES.index(sdk_name) for sdk_name in self.joint_names
+                SPOT_SDK_ARM_JOINT_NAMES.index(sdk_name)
+                for sdk_name in self.joint_names
             ]
             reorder_joint_values(self.points, sdk_indices)
 

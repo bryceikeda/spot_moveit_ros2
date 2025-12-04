@@ -41,7 +41,9 @@ class SpotTimeSync:
         self._robot.time_sync.wait_for_sync()
         self.max_round_trip_s = max(self.max_round_trip_s, self.get_round_trip_s())
 
-        end_time = time.time()  # Put as much of this function as possible before this line
+        end_time = (
+            time.time()
+        )  # Put as much of this function as possible before this line
         sync_duration_s = end_time - start_time
 
         self.max_sync_time_s = max(self.max_sync_time_s, sync_duration_s)
@@ -68,4 +70,6 @@ class SpotTimeSync:
         :return: TimeStamp object converted into the local time
         """
         timestamp_spot = TimeStamp.from_proto(timestamp_proto)
-        return timestamp_spot.shift_by_duration_s(timestamp_spot, -self.get_robot_clock_skew_s())
+        return timestamp_spot.shift_by_duration_s(
+            timestamp_spot, -self.get_robot_clock_skew_s()
+        )

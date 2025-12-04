@@ -17,6 +17,7 @@ set(DEPENDENCIES
   control_msgs
   moveit_msgs
   moveit_visual_tools
+  nav2_msgs
 )
 
 foreach(package ${DEPENDENCIES})
@@ -31,7 +32,8 @@ set(EXECUTABLES
   move_to_pose_around_obstacle
   move_to_pose
   path_constrained_movement
-)
+  navigate_to_pose
+  )
 
 foreach(target ${EXECUTABLES})
   add_executable(${target} src/${target}.cpp)
