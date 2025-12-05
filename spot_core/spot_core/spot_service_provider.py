@@ -8,11 +8,13 @@ from rclpy.node import Node
 from std_srvs.srv import Trigger
 
 if TYPE_CHECKING:
-    from spot_simple_controllers.spot_sdk_client import SpotSDKClient
-    from spot_simple_controllers.manipulation.spot_arm_controller import (
+    from spot_core.spot_core.spot_commander import (
+        SpotSDKClient,
+    )
+    from spot_core.manipulation.spot_arm_controller import (
         SpotArmController,
     )
-    from spot_simple_controllers.navigation.spot_navigation_controller import (
+    from spot_core.navigation.spot_navigation_controller import (
         SpotNavigationController,
     )
 

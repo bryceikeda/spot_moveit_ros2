@@ -6,18 +6,16 @@ from typing import Optional
 import rclpy
 from rclpy.node import Node
 
-from bosdyn.client import create_standard_sdk
 from bosdyn.client.estop import EstopClient
 from bosdyn.client.lease import LeaseClient, LeaseKeepAlive
-from bosdyn.client.robot_command import RobotCommandClient, RobotCommandBuilder
-from bosdyn.client.robot_state import RobotStateClient
-from bosdyn.client.util import setup_logging
+from bosdyn.client.robot_command import (
+    RobotCommandClient,
+    block_until_arm_arrives,
+)
 from bosdyn.api.estop_pb2 import ESTOP_LEVEL_NONE
 
-from spot_simple_controllers.spot_time_sync import SpotTimeSync
-from spot_simple_controllers.manipulation.arm_configuration import (
-    SPOT_SDK_ARM_JOINT_NAMES,
-)
+from spot_core.spot_time_sync import SpotTimeSync
+
 from bosdyn.api.spot.robot_command_pb2 import BodyControlParams, MobilityParams
 
 from bosdyn.client.robot_command import (
@@ -26,7 +24,7 @@ from bosdyn.client.robot_command import (
 )
 
 
-class SpotSDKClient(Node):
+class SpotCommander(Node):
     """Manages connection, authentication, and low-level control of Spot robot.
 
     Responsibilities:
@@ -38,18 +36,11 @@ class SpotSDKClient(Node):
     - State queries
     """
 
-    def __init__(self, hostname: str, username: str, password: str):
-        super().__init__("spot_sdk_client")
-
+    def __init__(self, robot):
+        super().__init__("spot_commander")
         self._created_time_s = time.time()
-        setup_logging(verbose=False)
-
-        # Connect and authenticate
-        self._sdk = create_standard_sdk("spot")
-        self._robot = self._sdk.create_robot(hostname)
-        self._robot.authenticate(username=username, password=password)
-
         # Initialize time sync
+        self._robot = robot
         self.time_sync = SpotTimeSync(self._robot)
         self.get_logger().info("Time sync established with Spot.")
         for _ in range(
@@ -57,12 +48,8 @@ class SpotSDKClient(Node):
         ):  # Repeatedly re-sync to hopefully better model network variance
             self.resync_and_log()
 
-        # Initialize clients
         self.command_client = self._robot.ensure_client(
             RobotCommandClient.default_service_name
-        )
-        self._state_client = self._robot.ensure_client(
-            RobotStateClient.default_service_name
         )
         self._estop_client = self._robot.ensure_client(EstopClient.default_service_name)
         self._lease_client = self._robot.ensure_client(LeaseClient.default_service_name)
@@ -72,7 +59,7 @@ class SpotSDKClient(Node):
         if not self.wait_while_estopped():
             raise RuntimeError("Spot is e-stopped and cannot continue.")
 
-        self.get_logger().info("SpotSDKClient initialized successfully.")
+        self.get_logger().info("SpotCommander initialized successfully.")
 
     def resync_and_log(self) -> None:
         """Resync with Spot and log information describing the resulting time sync."""
@@ -158,21 +145,6 @@ class SpotSDKClient(Node):
             self._lease_keeper.shutdown()
             self._lease_keeper = None
 
-    def has_arm(self) -> bool:
-        """Check if Spot has an arm."""
-        return self._robot.has_arm()
-
-    def get_arm_configuration(self) -> dict[str, float]:
-        """Get current arm joint positions."""
-        robot_state = self._state_client.get_robot_state()
-        sdk_joint_states = robot_state.kinematic_state.joint_states
-
-        return {
-            joint.name: joint.position.value
-            for joint in sdk_joint_states
-            if joint.name in SPOT_SDK_ARM_JOINT_NAMES
-        }
-
     def send_robot_command(
         self, command, duration_s: Optional[float] = None
     ) -> Optional[int]:
@@ -250,3 +222,10 @@ class SpotSDKClient(Node):
 
         self.get_logger().info("Spot is sitting.")
         return True
+
+    def block_until_arm_reaches_goal(self, command_id):
+        """Block until Spot's arm arrives at the identified command's goal."""
+        block_until_arm_arrives(self.command_client, command_id)
+
+    def get_robot_command_feedback(self, command_id):
+        return self.command_client.robot_command_feedback(command_id)

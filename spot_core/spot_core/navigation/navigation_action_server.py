@@ -9,7 +9,7 @@ from nav2_msgs.action import NavigateToPose
 from geometry_msgs.msg import PoseStamped
 
 if TYPE_CHECKING:
-    from spot_simple_controllers.navigation.spot_navigation_controller import (
+    from spot_core.navigation.spot_navigation_controller import (
         SpotNavigationController,
     )
 

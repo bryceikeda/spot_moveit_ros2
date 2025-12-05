@@ -1,40 +1,32 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, TYPE_CHECKING
-import threading
+from typing import TYPE_CHECKING
 
 import time
-from geometry_msgs.msg import PoseStamped, Pose
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import PoseStamped
 
-from nav2_msgs.action import NavigateToPose
-import numpy as np
 
 if TYPE_CHECKING:
-    from spot_simple_controllers.spot_sdk_client import SpotSDKClient
-import synchros2.scope as ros_scope
+    from spot_core.spot_commander import (
+        SpotCommander,
+    )
 from bosdyn.client.frame_helpers import BODY_FRAME_NAME, VISION_FRAME_NAME
 from bosdyn.client.math_helpers import Quat, SE3Pose, SE2Pose
-from bosdyn.client.robot_command import (
-    RobotCommandBuilder,
-    blocking_stand,
-    blocking_sit,
-)
-from bosdyn_msgs.conversions import convert
-from synchros2.action_client import ActionClientWrapper
+
 from synchros2.tf_listener_wrapper import TFListenerWrapper
-from synchros2.utilities import fqn, namespace_with
 from bosdyn.api import (
     arm_command_pb2,
-    estop_pb2,
     robot_command_pb2,
     synchronized_command_pb2,
 )
-from spot_simple_controllers.navigation.navigation_goal_checker import (
+from spot_core.navigation.navigation_goal_checker import (
     NavigationGoalChecker,
 )
 from google.protobuf import wrappers_pb2
+from bosdyn.client.robot_command import (
+    RobotCommandBuilder,
+)
 
 
 class SpotNavigationController:
@@ -42,12 +34,14 @@ class SpotNavigationController:
 
     def __init__(
         self,
-        spot_sdk_client: SpotSDKClient,
+        spot_commander: SpotCommander,
+        state_client,
         tf_listener_wrapper: TFListenerWrapper,
         navigation_goal_checker: NavigationGoalChecker,
         timeout_s=20.0,
     ) -> None:
-        self._client = spot_sdk_client
+        self.spot_commander = spot_commander
+        self.state_client = state_client
         self.timeout_s = timeout_s
 
         self.tf_listener_wrapper = tf_listener_wrapper
@@ -59,11 +53,11 @@ class SpotNavigationController:
     # ======================================================================
     def stand(self):
         """Stand robot."""
-        blocking_stand(self._client, timeout_sec=10)
+        self.spot_commander.stand_up()
 
     def sit(self):
         """Sit robot."""
-        blocking_sit(self._client, timeout_sec=10)
+        self.spot_commander.sit_down()
 
     def build_arm_command(self, arm_traj=None, max_vel=4, max_acc=4):
         """Helper function to create a RobotCommand from an ArmJointTrajectory.
@@ -146,7 +140,7 @@ class SpotNavigationController:
             ),
         ).get_closest_se2_transform()
 
-        if waypoint.header.frame_id is "body":
+        if waypoint.header.frame_id == "body":
             goal = self.compute_goal_in_vision_frame(goal, BODY_FRAME_NAME)
 
             if goal is None:
@@ -191,7 +185,9 @@ class SpotNavigationController:
         end_time_s = time.time() + self.timeout_s
 
         while not reached_goal and time.time() < end_time_s:
-            command_id = self._client.send_robot_command(robot_command, duration_s=5)
+            command_id = self.spot_commander.send_robot_command(
+                robot_command, duration_s=5
+            )
             if command_id is None:
                 logging.warning(
                     "Navigation attempt returned None instead of a command ID."
@@ -203,6 +199,6 @@ class SpotNavigationController:
             time.sleep(0.2)
 
         stop_command = RobotCommandBuilder.stop_command()
-        self._client.send_robot_command(stop_command)
+        self.spot_commander.send_robot_command(stop_command)
 
         return self.navigation_goal_checker.is_goal_reached(goal, frame_id)

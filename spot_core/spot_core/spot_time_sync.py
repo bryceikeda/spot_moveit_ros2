@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from bosdyn.util import duration_to_seconds
 
-from spot_simple_controllers.time_stamp import TimeStamp, TimestampProto
+from spot_core.time_stamp import TimeStamp, TimestampProto
 
 if TYPE_CHECKING:
     from bosdyn.client.robot import Robot

@@ -9,11 +9,11 @@ from rclpy.node import Node
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
 from control_msgs.action import FollowJointTrajectory
 
-from spot_simple_controllers.manipulation.joint_trajectory import JointTrajectory
-from spot_simple_controllers.manipulation.spot_arm_controller import ArmCommandOutcome
+from spot_core.manipulation.joint_trajectory import JointTrajectory
+from spot_core.manipulation.spot_arm_controller import ArmCommandOutcome
 
 if TYPE_CHECKING:
-    from spot_simple_controllers.spot_arm_controller import SpotArmController
+    from spot_core.spot_arm_controller import SpotArmController
 
 
 class ArmTrajectoryActionServer(Node):

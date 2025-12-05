@@ -6,31 +6,30 @@ import time
 import logging
 from enum import IntEnum
 from typing import TYPE_CHECKING
-
-import rclpy
-from rclpy.node import Node
-from rclpy.action import ActionServer, CancelResponse, GoalResponse
-
 from bosdyn.api.gripper_command_pb2 import ClawGripperCommand
 from bosdyn.client.exceptions import InvalidRequestError
-from bosdyn.client.robot_command import RobotCommandBuilder, block_until_arm_arrives
-from bosdyn.util import duration_to_seconds
-from bosdyn.client.robot_command import block_until_arm_arrives
 
-from spot_simple_controllers.manipulation.arm_configuration import (
+from spot_core.manipulation.arm_configuration import (
     MAP_JOINT_NAMES_SPOT_SDK_TO_URDF,
 )
-from spot_simple_controllers.time_stamp import TimeStamp
+from spot_core.time_stamp import TimeStamp
 
 if TYPE_CHECKING:
-    from bosdyn.api.arm_command_pb2 import ArmJointTrajectory
-    from spot_simple_controllers.manipulation.joint_trajectory import JointTrajectory
-    from spot_simple_controllers.manipulation.segment_schedule import SegmentSchedule
-    from spot_simple_controllers.spot_sdk_client import SpotSDKClient
+    from spot_core.manipulation.joint_trajectory import JointTrajectory
+    from spot_core.manipulation.segment_schedule import SegmentSchedule
+    from spot_core.spot_core.spot_commander import (
+        SpotCommander,
+    )
 
 MIN_OPEN_ANGLE_RAD: Final[float] = -1.5707  # Fully closed
 MAX_OPEN_ANGLE_RAD: Final[float] = 0.0  # Fully open
 START_ANGLE_TOLERANCE_RAD = 0.01
+from spot_core.manipulation.arm_configuration import (
+    SPOT_SDK_ARM_JOINT_NAMES,
+)
+from bosdyn.client.robot_command import (
+    RobotCommandBuilder,
+)
 
 
 class ArmCommandOutcome(IntEnum):
@@ -63,12 +62,15 @@ class SpotArmController:
     by action servers or other higher-level components.
     """
 
-    def __init__(self, spot_sdk_client: SpotSDKClient, max_segment_len: int = 250):
+    def __init__(
+        self,
+        spot_commander: SpotCommander,
+        state_client=None,
+        max_segment_len: int = 250,
+    ):
 
-        self._client = spot_sdk_client
-
-        if not self.has_arm():
-            raise ValueError("Cannot control Spot's arm if Spot has no arm!")
+        self.spot_commander = spot_commander
+        self.state_client = state_client
 
         self.command_id: Optional[int] = None
         self._locked = True
@@ -94,18 +96,14 @@ class SpotArmController:
     def _log_error(self, msg: str):
         self._logger.error(msg)
 
-    # -------------------------------------------------------------------------
-    # Core control methods
-    # -------------------------------------------------------------------------
-    def has_arm(self) -> None:
-        return self._client.has_arm()
-
     def stow(self):
         """Stow robot arm."""
-        self._client.robot_command(command=RobotCommandBuilder.arm_stow_command())
+        self.spot_commander.send_robot_command(
+            command=RobotCommandBuilder.arm_stow_command()
+        )
 
     def unstow(self):
-        self._client.robot_command(RobotCommandBuilder.arm_ready_command())
+        self.spot_commander.send_robot_command(RobotCommandBuilder.arm_ready_command())
 
     def _sleep_until(self, local_time_s: float) -> None:
         """Sleep until the specified local time.
@@ -143,7 +141,7 @@ class SpotArmController:
         assert traj.HasField("reference_time"), "Segment must have a reference_time."
 
         # Calculate timing parameters
-        max_rtt_s = max(0.0, self._client.time_sync.max_round_trip_s)
+        max_rtt_s = max(0.0, self.spot_commander.time_sync.max_round_trip_s)
         cushion_s = max(0.1, 2.0 * max_rtt_s)
         eps_s = 0.03  # Additional margin for segment-adjusting overhead
         send_early_s = schedule.min_lead_s + cushion_s + eps_s
@@ -160,7 +158,7 @@ class SpotArmController:
         # Retry loop for timing-related failures
         for attempt in range(1, max_attempts + 1):
             try:
-                self.command_id = self._client.send_robot_command(
+                self.command_id = self.spot_commander.send_robot_command(
                     schedule.commands[idx]
                 )
             except InvalidRequestError as err:
@@ -184,6 +182,17 @@ class SpotArmController:
                 self._log_info("Trajectory segment sent successfully.")
                 return
 
+    def get_arm_configuration(self) -> dict[str, float]:
+        """Get current arm joint positions."""
+        robot_state = self.state_client.get_robot_state()
+        sdk_joint_states = robot_state.kinematic_state.joint_states
+
+        return {
+            joint.name: joint.position.value
+            for joint in sdk_joint_states
+            if joint.name in SPOT_SDK_ARM_JOINT_NAMES
+        }
+
     def _validate_trajectory_start(self, trajectory: JointTrajectory) -> bool:
         """Validate that trajectory starts close to current arm position.
 
@@ -193,7 +202,7 @@ class SpotArmController:
         Returns:
             True if trajectory start is valid, False otherwise
         """
-        arm_configuration = self._client.get_arm_configuration()
+        arm_configuration = self.get_arm_configuration()
         command_start_angles_rad = trajectory.points[0].positions_rad
 
         for sdk_joint, curr_rad in arm_configuration.items():
@@ -237,14 +246,14 @@ class SpotArmController:
             Outcome code indicating success or failure reason
         """
         # Ensure we have control
-        if not self._client.has_control():
-            if not self._client.take_control():
+        if not self.spot_commander.has_control():
+            if not self.spot_commander.take_control():
                 result.error_string = "Failed to acquire robot control."
                 self.get_logger().error(result.error_string)
                 return ArmCommandOutcome.NO_CONTROL
 
         # Resynchronize time with robot
-        self._client.time_sync.resync()
+        self.spot_commander.time_sync.resync()
 
         # Validate trajectory start position
         if not self._validate_trajectory_start(trajectory):
@@ -292,7 +301,7 @@ class SpotArmController:
             Outcome code indicating success or failure
         """
         # Check if we have control
-        if not self._client.has_control():
+        if not self.spot_commander.has_control():
             self._log_warn("Gripper command rejected: no control of Spot.")
             return GripperCommandOutcome.FAILURE
 
@@ -307,7 +316,7 @@ class SpotArmController:
 
         # Create and send gripper command
         robot_command = RobotCommandBuilder.claw_gripper_open_angle_command(target_rad)
-        self.command_id = self._client.send_robot_command(robot_command)
+        self.command_id = self.spot_commander.send_robot_command(robot_command)
 
         if self.command_id is None:
             self._log_error("No command ID returned from gripper command.")
@@ -320,13 +329,13 @@ class SpotArmController:
 
     def deploy_arm(self) -> bool:
         """Deploy Spot's arm to ready position."""
-        if not self._client.has_control():
+        if not self.spot_commander.has_control():
             self._log_warn("Cannot deploy arm: no control.")
             return False
 
         self._log_info("Deploying arm...")
         cmd = RobotCommandBuilder.arm_ready_command()
-        self.command_id = self._client.send_robot_command(cmd)
+        self.command_id = self.spot_commander.send_robot_command(cmd)
 
         if self.command_id is None:
             return False
@@ -337,13 +346,13 @@ class SpotArmController:
 
     def stow_arm(self) -> bool:
         """Stow Spot's arm."""
-        if not self._client.has_control():
+        if not self.spot_commander.has_control():
             self._log_warn("Cannot stow arm: no control.")
             return False
 
         self._log_info("Stowing arm...")
         cmd = RobotCommandBuilder.arm_stow_command()
-        self.command_id = self._client.send_robot_command(cmd)
+        self.command_id = self.spot_commander.send_robot_command(cmd)
 
         if self.command_id is None:
             return False
@@ -356,7 +365,7 @@ class SpotArmController:
         """Block until Spot's arm arrives at the identified command's goal."""
 
         self._log_info("Blocking until arm arrives...")
-        block_until_arm_arrives(self._client.command_client, self.command_id)
+        self.spot_commander.block_until_arm_reaches_goal(self.command_id)
         time.sleep(0.5)
         self._log_info("Done blocking.\n")
 
@@ -373,9 +382,7 @@ class SpotArmController:
         now = time.time()
 
         while now < end_time:
-            response = self._client.command_client.robot_command_feedback(
-                self.command_id
-            )
+            response = self.spot_commander.get_robot_command_feedback(self.command_id)
             if response.feedback.HasField("synchronized_feedback"):
                 sync_fb = response.feedback.synchronized_feedback
 

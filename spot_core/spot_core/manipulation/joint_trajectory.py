@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING
 from bosdyn.client.robot_command import RobotCommandBuilder
 from bosdyn.util import duration_to_seconds, timestamp_to_sec
 
-from spot_simple_controllers.manipulation.segment_schedule import SegmentSchedule
-from spot_simple_controllers.manipulation.arm_configuration import (
+from spot_core.manipulation.segment_schedule import SegmentSchedule
+from spot_core.manipulation.arm_configuration import (
     MAP_JOINT_NAMES_URDF_TO_SPOT_SDK,
     SPOT_SDK_ARM_JOINT_NAMES,
     SPOT_URDF_ARM_JOINT_NAMES,
 )
-from spot_simple_controllers.time_stamp import TimeStamp
+from spot_core.time_stamp import TimeStamp
 
 if TYPE_CHECKING:
     import trajectory_msgs.msg

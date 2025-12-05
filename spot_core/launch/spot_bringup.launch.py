@@ -47,14 +47,14 @@ def generate_launch_description():
         ],
     )
 
-    # Launch the spot_simple_controllers node (delayed)
-    spot_controllers_node = TimerAction(
+    # Launch the spot_core node (delayed)
+    spot_control_node = TimerAction(
         period=5.0,  # Wait 5 seconds after spot_driver starts
         actions=[
             Node(
-                package="spot_simple_controllers",
-                executable="spot_simple_controllers_node",
-                name="spot_simple_controllers_node",
+                package="spot_core",
+                executable="spot_control_node",
+                name="spot_control_node",
                 output="screen",
                 parameters=[config_file],
             )
@@ -62,5 +62,5 @@ def generate_launch_description():
     )
 
     return LaunchDescription(
-        [spot_driver_launch, spot_moveit_launch, spot_controllers_node]
+        [spot_driver_launch, spot_moveit_launch, spot_control_node]
     )

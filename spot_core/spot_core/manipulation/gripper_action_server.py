@@ -9,12 +9,12 @@ from rclpy.node import Node
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
 from control_msgs.action import GripperCommand
 
-from spot_simple_controllers.manipulation.spot_arm_controller import (
+from spot_core.manipulation.spot_arm_controller import (
     GripperCommandOutcome,
 )
 
 if TYPE_CHECKING:
-    from spot_simple_controllers.manipulation.spot_arm_controller import (
+    from spot_core.manipulation.spot_arm_controller import (
         SpotArmController,
     )
 
