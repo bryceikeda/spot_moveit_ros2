@@ -6,4 +6,5 @@ __pycache__/
 *.pyc
 *.pyo
 
-/spot_simple_controllers/config/spot_parameters.yaml
+/spot_core/config/spot_parameters.yaml
+/spot_core/downloaded_graph/*

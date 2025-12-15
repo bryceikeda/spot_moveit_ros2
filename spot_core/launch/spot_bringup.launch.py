@@ -42,7 +42,8 @@ def generate_launch_description():
                             ]
                         )
                     ]
-                )
+                ),
+                launch_arguments={"hardware_interface": "robot"}.items(),
             )
         ],
     )
