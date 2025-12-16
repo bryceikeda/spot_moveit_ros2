@@ -12,7 +12,7 @@ source install/setup.bash
 ## Running on the physical robot
 Make sure the robot is in an open space if running on the physical robot.
 
-After this, put your login credentials into a configuration file yaml ([spot_parameters_example.yaml](../spot_simple_controllers/config/spot_parameters_example.yaml)) then **rename the file to spot_parameters_example.yaml**. The driver and controllers can be started via the following launchfile:
+After this, put your login credentials into a configuration file yaml ([spot_parameters_example.yaml](../spot_core/config/spot_parameters_example.yaml)) then **rename the file to spot_parameters_example.yaml**. The driver and controllers can be started via the following launchfile:
 ```bash
 ros2 launch spot_simple_controllers spot_bringup.launch.py
 ```
