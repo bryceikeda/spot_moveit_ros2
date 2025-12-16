@@ -5,6 +5,9 @@ import numpy as np
 from bosdyn.client.frame_helpers import BODY_FRAME_NAME, VISION_FRAME_NAME
 from bosdyn.client.math_helpers import Quat, SE3Pose, SE2Pose
 from synchros2.tf_listener_wrapper import TFListenerWrapper
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class NavigationGoalChecker:
@@ -27,7 +30,7 @@ class NavigationGoalChecker:
     ):
         curr_pose = self.tf_listener_wrapper.lookup_a_tform_b(frame_id, BODY_FRAME_NAME)
         if curr_pose is None:
-            logging.info("Could not lookup transform.")
+            logger.info("Could not lookup transform.")
             return False
         curr_pose_se2 = SE3Pose(
             curr_pose.transform.translation.x,
@@ -48,11 +51,11 @@ class NavigationGoalChecker:
         angle_reached = angle_error_rad < abs_angle_rad
         result = distance_reached and angle_reached
 
-        logging.info(f"Current Euclidean distance to target pose: {distance_2d_m} m")
-        logging.info(
+        logger.info(f"Current Euclidean distance to target pose: {distance_2d_m} m")
+        logger.info(
             f"Current absolute angular error from target pose: {angle_error_rad} rad"
         )
-        logging.info(f"Ending navigation? {result}")
+        logger.info(f"Ending navigation? {result}")
 
         return result
 

@@ -9,29 +9,26 @@ from rclpy.node import Node
 from spot_core.manipulation.arm_trajectory_action_server import (
     ArmTrajectoryActionServer,
 )
-from spot_core.manipulation.gripper_action_server import (
-    GripperActionServer,
-)
+from spot_core.manipulation.gripper_action_server import GripperActionServer
 from spot_core.manipulation.spot_arm_controller import SpotArmController
-from spot_core.navigation.spot_navigation_controller import (
-    SpotNavigationController,
-)
-from spot_core.navigation.navigation_action_server import (
-    NavigationActionServer,
-)
-from spot_core.navigation.navigation_goal_checker import (
-    NavigationGoalChecker,
-)
+from spot_core.navigation.spot_navigation_controller import SpotNavigationController
+from spot_core.navigation.navigation_action_server import NavigationActionServer
+from spot_core.navigation.navigation_goal_checker import NavigationGoalChecker
+from spot_core.navigation.graph_nav_client_wrapper import GraphNavClientWrapper
+from spot_core.perception.april_tag_tracker import AprilTagTracker
+from spot_core.perception.perception_action_server import PerceptionActionServer
+
 from spot_core.spot_service_provider import SpotServiceProvider
 from synchros2.tf_listener_wrapper import TFListenerWrapper
 
 from bosdyn.client import create_standard_sdk
-from bosdyn.client.robot_command import RobotCommandClient
 from bosdyn.client.robot_state import RobotStateClient
 from bosdyn.client.util import setup_logging
 from bosdyn.client.graph_nav import GraphNavClient
-
+from bosdyn.client.image import ImageClient
+from bosdyn.client.robot_state import RobotStateClient
 from spot_core.spot_commander import SpotCommander
+from spot_core.navigation.fiducial_handler import FiducialHandler
 
 MAX_SEGMENT_LENGTH = 30
 """Core interface for Spot robot connection and control."""
@@ -73,6 +70,7 @@ class SpotControlNode(Node):
         self.graph_nav_client = self.robot.ensure_client(
             GraphNavClient.default_service_name
         )
+        self.image_client = self.robot.ensure_client(ImageClient.default_service_name)
 
         self.spot_commander = None
 
@@ -82,6 +80,8 @@ class SpotControlNode(Node):
         self.navigation_action_server = None
         self.tf_listener_wrapper = None
         self.navigation_goal_checker = None
+        self.graph_nav_client_wrapper = None
+        self.fiducial_tracker = None
 
     def initialize_robot(self):
         # Setup robot if auto_claim enabled
@@ -92,7 +92,6 @@ class SpotControlNode(Node):
             raise RuntimeError("Failed to take control of Spot robot")
 
         self.tf_listener_wrapper = TFListenerWrapper(self)
-
         if self.auto_claim:
             self._setup_controllers()
 
@@ -109,19 +108,36 @@ class SpotControlNode(Node):
         self.gripper_server = GripperActionServer(arm_controller)
 
         self.navigation_goal_checker = NavigationGoalChecker(self.tf_listener_wrapper)
+
+        self.graph_nav_client_wrapper = GraphNavClientWrapper(
+            self.graph_nav_client,
+            self.state_client,
+        )
+
+        self.fiducial_handler = FiducialHandler(self.tf_listener_wrapper)
+
         navigation_controller = SpotNavigationController(
             self.spot_commander,
             self.state_client,
+            self.graph_nav_client_wrapper,
             self.tf_listener_wrapper,
+            self.fiducial_handler,
             self.navigation_goal_checker,
         )
+
         self.navigation_action_server = NavigationActionServer(navigation_controller)
+
+        april_tag_tracker = AprilTagTracker(self.image_client)
+
+        self.perception_action_server = PerceptionActionServer(april_tag_tracker)
 
         self.nodes.extend(
             [
                 self.arm_trajectory_server,
                 self.gripper_server,
                 self.navigation_action_server,
+                self.perception_action_server,
+                self.fiducial_handler,
             ]
         )
 

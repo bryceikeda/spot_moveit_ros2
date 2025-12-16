@@ -5,12 +5,12 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
-#include "spot_behavior_msgs/action/navigate_to_pose.hpp"
+#include "nav2_msgs/action/navigate_to_pose.hpp"
 
 class NavigationActionClient : public rclcpp::Node
 {
 public:
-  using NavigateToPose = spot_behavior_msgs::action::NavigateToPose;
+  using NavigateToPose = nav2_msgs::action::NavigateToPose;
   using GoalHandleNav = rclcpp_action::ClientGoalHandle<NavigateToPose>;
 
   NavigationActionClient()

@@ -57,5 +57,11 @@ wget -q -O /tmp/spot-cpp-sdk_${SDK_VERSION}_${ARCH}.deb https://github.com/bdaii
 sudo dpkg -i /tmp/spot-cpp-sdk_${SDK_VERSION}_${ARCH}.deb
 rm /tmp/spot-cpp-sdk_${SDK_VERSION}_${ARCH}.deb
 
+# Install apriltags
+cd apriltag
+sudo cmake -B build -DCMAKE_BUILD_TYPE=Release
+sudo cmake --build build --target install ARCH="$ARCH"
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
 cd ..
 colcon build --symlink-install

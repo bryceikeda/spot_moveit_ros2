@@ -30,6 +30,9 @@ from spot_core.manipulation.arm_configuration import (
 from bosdyn.client.robot_command import (
     RobotCommandBuilder,
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ArmCommandOutcome(IntEnum):
@@ -77,24 +80,6 @@ class SpotArmController:
         self.max_segment_len = min(max_segment_len, 250)
         self._start_angle_tolerance_rad = START_ANGLE_TOLERANCE_RAD
         self._future_proof_s = 1.0
-        # Create a logger for the module
-        self._logger = logging.getLogger("SpotArmController")
-        self._logger.setLevel(logging.INFO)  # Change to DEBUG for more verbose output
-
-        # Add a console handler
-        ch = logging.StreamHandler()
-        formatter = logging.Formatter("[%(levelname)s] %(name)s: %(message)s")
-        ch.setFormatter(formatter)
-        self._logger.addHandler(ch)
-
-    def _log_info(self, msg: str):
-        self._logger.info(msg)
-
-    def _log_warn(self, msg: str):
-        self._logger.warning(msg)
-
-    def _log_error(self, msg: str):
-        self._logger.error(msg)
 
     def stow(self):
         """Stow robot arm."""
@@ -153,7 +138,7 @@ class SpotArmController:
         # Adjust schedule if we're late
         delta_s = schedule.slide_segment_if_late(idx, send_early_s)
         if delta_s > 0:
-            self._log_warn(f"Late by {delta_s:.3f}s; shifted schedule.")
+            logger.warning(f"Late by {delta_s:.3f}s; shifted schedule.")
 
         # Retry loop for timing-related failures
         for attempt in range(1, max_attempts + 1):
@@ -162,7 +147,7 @@ class SpotArmController:
                     schedule.commands[idx]
                 )
             except InvalidRequestError as err:
-                self._log_warn(
+                logger.warning(
                     f"Segment attempt {attempt}/{max_attempts} failed: {err}"
                 )
 
@@ -177,9 +162,9 @@ class SpotArmController:
                 bump_s = 0.03 * (2 ** (attempt - 1))
                 delta_s = schedule.slide_segment_if_late(idx, send_early_s + bump_s)
                 if delta_s > 0:
-                    self._log_warn(f"Shifted schedule by {delta_s:.3f}s for retry.")
+                    logger.warning(f"Shifted schedule by {delta_s:.3f}s for retry.")
             else:
-                self._log_info("Trajectory segment sent successfully.")
+                logger.info("Trajectory segment sent successfully.")
                 return
 
     def get_arm_configuration(self) -> dict[str, float]:
@@ -213,14 +198,14 @@ class SpotArmController:
             try:
                 joint_idx = trajectory.joint_names.index(urdf_joint)
             except ValueError:
-                self._log_warn(f"Joint {urdf_joint} not found in trajectory.")
+                logger.warning(f"Joint {urdf_joint} not found in trajectory.")
                 return False
 
             cmd_rad = command_start_angles_rad[joint_idx]
 
             # Check if start position is close enough
             if abs(curr_rad - cmd_rad) > self._start_angle_tolerance_rad:
-                self._log_warn(
+                logger.warning(
                     f"Start mismatch for {urdf_joint}: "
                     f"current={curr_rad:.3f} rad, commanded={cmd_rad:.3f} rad "
                     f"(diff={abs(curr_rad - cmd_rad):.3f} rad)"
@@ -248,8 +233,7 @@ class SpotArmController:
         # Ensure we have control
         if not self.spot_commander.has_control():
             if not self.spot_commander.take_control():
-                result.error_string = "Failed to acquire robot control."
-                self.get_logger().error(result.error_string)
+                logger.error("Failed to acquire robot control.")
                 return ArmCommandOutcome.NO_CONTROL
 
         # Resynchronize time with robot
@@ -266,7 +250,7 @@ class SpotArmController:
         # Create segmented schedule
         segments_schedule = trajectory.create_segment_schedule(self.max_segment_len)
 
-        self._log_info(
+        logger.info(
             f"Executing trajectory with {len(segments_schedule.commands)} segments."
         )
 
@@ -275,7 +259,7 @@ class SpotArmController:
         for idx in range(len(segments_schedule.commands)):
             # Check for preemption
             if preempt_check and preempt_check():
-                self._log_warn("Trajectory preempted by caller.")
+                logger.warning("Trajectory preempted by caller.")
                 preempted = True
                 break
 
@@ -284,9 +268,9 @@ class SpotArmController:
 
         # Wait for arm to reach final position
         if self.command_id is not None:
-            self._log_info("Waiting for arm to reach final position...")
+            logger.info("Waiting for arm to reach final position...")
             self.block_until_arm_reaches_goal()
-            self._log_info("Arm reached final position.")
+            logger.info("Arm reached final position.")
 
         return ArmCommandOutcome.PREEMPTED if preempted else ArmCommandOutcome.SUCCESS
 
@@ -302,12 +286,12 @@ class SpotArmController:
         """
         # Check if we have control
         if not self.spot_commander.has_control():
-            self._log_warn("Gripper command rejected: no control of Spot.")
+            logger.warning("Gripper command rejected: no control of Spot.")
             return GripperCommandOutcome.FAILURE
 
         # Validate gripper angle using constants
         if not (MIN_OPEN_ANGLE_RAD <= target_rad <= MAX_OPEN_ANGLE_RAD):
-            self._log_warn(
+            logger.warning(
                 f"Invalid gripper target: {target_rad:.3f} rad. "
                 f"Valid range: [{MIN_OPEN_ANGLE_RAD:.3f}, "
                 f"{MAX_OPEN_ANGLE_RAD:.3f}]"
@@ -322,7 +306,7 @@ class SpotArmController:
             self._log_error("No command ID returned from gripper command.")
             return GripperCommandOutcome.FAILURE
 
-        self._log_info(f"Gripper command sent: target={target_rad:.3f} rad")
+        logger.info(f"Gripper command sent: target={target_rad:.3f} rad")
 
         # Block until gripper completes command
         return self.block_during_gripper_command()
@@ -330,10 +314,10 @@ class SpotArmController:
     def deploy_arm(self) -> bool:
         """Deploy Spot's arm to ready position."""
         if not self.spot_commander.has_control():
-            self._log_warn("Cannot deploy arm: no control.")
+            logger.warning("Cannot deploy arm: no control.")
             return False
 
-        self._log_info("Deploying arm...")
+        logger.info("Deploying arm...")
         cmd = RobotCommandBuilder.arm_ready_command()
         self.command_id = self.spot_commander.send_robot_command(cmd)
 
@@ -341,16 +325,16 @@ class SpotArmController:
             return False
 
         self.block_until_arm_reaches_goal()
-        self._log_info("Arm deployed.")
+        logger.info("Arm deployed.")
         return True
 
     def stow_arm(self) -> bool:
         """Stow Spot's arm."""
         if not self.spot_commander.has_control():
-            self._log_warn("Cannot stow arm: no control.")
+            logger.warning("Cannot stow arm: no control.")
             return False
 
-        self._log_info("Stowing arm...")
+        logger.info("Stowing arm...")
         cmd = RobotCommandBuilder.arm_stow_command()
         self.command_id = self.spot_commander.send_robot_command(cmd)
 
@@ -358,16 +342,16 @@ class SpotArmController:
             return False
 
         self.block_until_arm_reaches_goal()
-        self._log_info("Arm stowed.")
+        logger.info("Arm stowed.")
         return True
 
     def block_until_arm_reaches_goal(self) -> None:
         """Block until Spot's arm arrives at the identified command's goal."""
 
-        self._log_info("Blocking until arm arrives...")
+        logger.info("Blocking until arm arrives...")
         self.spot_commander.block_until_arm_reaches_goal(self.command_id)
         time.sleep(0.5)
-        self._log_info("Done blocking.\n")
+        logger.info("Done blocking.\n")
 
     def block_during_gripper_command(
         self,
