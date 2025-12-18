@@ -18,6 +18,7 @@ set(DEPENDENCIES
   moveit_msgs
   moveit_visual_tools
   nav2_msgs
+  moveit_task_constructor_core
 )
 
 foreach(package ${DEPENDENCIES})
@@ -33,6 +34,7 @@ set(EXECUTABLES
   move_to_pose
   path_constrained_movement
   navigate_to_pose
+  mtc_node
   )
 
 foreach(target ${EXECUTABLES})

@@ -1,0 +1,9 @@
+ <root BTCPP_format="4" >
+     <BehaviorTree ID="OpenCloseGripper">
+        <Sequence name="root">
+            <AddRosNodeToBlackboard topic_name="node_to_blackboard"/>
+            <MoveGripperAction    action_name="/gripper_controller/gripper_cmd" position="-1.57"/>
+            <MoveGripperAction    action_name="/gripper_controller/gripper_cmd" position="0.0"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>

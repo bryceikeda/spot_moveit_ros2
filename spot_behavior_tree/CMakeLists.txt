@@ -20,6 +20,7 @@ set(DEPENDENCIES
     control_msgs
     moveit_msgs
     moveit_visual_tools
+    moveit_task_constructor_core
 )
 
 foreach(package ${DEPENDENCIES})
@@ -111,6 +112,15 @@ list(APPEND plugin_libs append_orientation_constraint_plugin)
 
 add_library(set_moveit_planning_time_plugin SHARED plugins/action/set_moveit_planning_time.cpp)
 list(APPEND plugin_libs set_moveit_planning_time_plugin)
+
+add_library(initialize_mtc_task_plugin SHARED plugins/action/initialize_mtc_task.cpp)
+list(APPEND plugin_libs initialize_mtc_task_plugin)
+
+add_library(setup_mtc_current_state_plugin SHARED plugins/action/setup_mtc_current_state.cpp)
+list(APPEND plugin_libs setup_mtc_current_state_plugin)
+
+add_library(move_gripper_action_plugin SHARED plugins/action/move_gripper_action.cpp)
+list(APPEND plugin_libs move_gripper_action_plugin)
 
 foreach(bt_plugin ${plugin_libs})
   target_include_directories(${bt_plugin}

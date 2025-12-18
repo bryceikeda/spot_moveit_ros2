@@ -56,11 +56,14 @@ def _build_moveit_config(mappings: dict) -> MoveItConfigsBuilder:
 
 def _create_move_group_node(moveit_config) -> Node:
     """Create the MoveIt move_group node."""
+    move_group_capabilities = {"capabilities": "move_group/ExecuteTaskSolutionCapability"}
+
     return Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
-        parameters=[moveit_config.to_dict()],
+        parameters=[moveit_config.to_dict(),
+                    move_group_capabilities],
         arguments=["--ros-args", "--log-level", "info"],
     )
 
