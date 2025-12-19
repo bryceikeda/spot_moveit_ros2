@@ -4,14 +4,10 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /MotionPlanning1
-        - /MarkerArray1
-        - /TF1
         - /TF1/Frames1
-        - /TF1/Tree1/world1
-        - /TF1/Tree1/world1/odom1
+        - /Motion Planning Tasks1
       Splitter Ratio: 0.5
-    Tree Height: 168
+    Tree Height: 186
   - Class: rviz_common/Help
     Name: Help
   - Class: rviz_common/Views
@@ -21,6 +17,29 @@ Panels:
     Splitter Ratio: 0.5
   - Class: rviz_visual_tools/RvizVisualToolsGui
     Name: RvizVisualToolsGui
+  - Class: moveit_task_constructor/Motion Planning Tasks
+    Global Settings:
+      Task View Settings:
+        Old task handling: Keep
+        Show Computation Times: true
+        Task Expansion: All Expanded
+    Name: Motion Planning Tasks
+    Tasks View:
+      property_splitter:
+        - 232
+        - 87
+      solution_sorting:
+        column: 0
+        order: 1
+      solutions_splitter:
+        - 459
+        - 229
+      solutions_view_columns: ~
+      tasks_view_columns:
+        - 286
+        - 57
+        - 57
+        - 57
 Visualization Manager:
   Class: ""
   Displays:
@@ -391,19 +410,9 @@ Visualization Manager:
           Value: false
         arm_link_wr1:
           Value: false
-        back:
-          Value: false
-        back_fisheye:
-          Value: false
         base_link:
           Value: false
         body:
-          Value: false
-        fiducial_1:
-          Value: false
-        filtered_fiducial_1:
-          Value: true
-        flat_body:
           Value: false
         front_left_hip:
           Value: false
@@ -418,28 +427,6 @@ Visualization Manager:
         front_right_lower_leg:
           Value: false
         front_right_upper_leg:
-          Value: false
-        frontleft:
-          Value: false
-        frontleft_fisheye:
-          Value: false
-        frontright:
-          Value: false
-        frontright_fisheye:
-          Value: false
-        gpe:
-          Value: false
-        hand:
-          Value: false
-        hand_color_image_sensor:
-          Value: false
-        hand_depth_sensor:
-          Value: false
-        head:
-          Value: false
-        left:
-          Value: false
-        left_fisheye:
           Value: false
         odom:
           Value: false
@@ -457,10 +444,6 @@ Visualization Manager:
           Value: false
         rear_right_upper_leg:
           Value: false
-        right:
-          Value: false
-        right_fisheye:
-          Value: false
         vision:
           Value: false
         world:
@@ -471,71 +454,195 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        world:
-          odom:
-            body:
-              arm_link_sh0:
-                arm_link_sh1:
-                  arm_link_hr0:
-                    arm_link_el0:
-                      arm_link_el1:
-                        arm_link_wr0:
-                          arm_link_wr1:
-                            arm_link_fngr:
-                              {}
-                            hand_color_image_sensor:
-                              {}
-                            hand_depth_sensor:
-                              {}
-              base_link:
-                {}
-              flat_body:
-                {}
-              front_left_hip:
-                front_left_upper_leg:
-                  front_left_lower_leg:
-                    {}
-              front_rail:
-                {}
-              front_right_hip:
-                front_right_upper_leg:
-                  front_right_lower_leg:
-                    {}
-              hand:
-                {}
-              head:
-                back:
-                  back_fisheye:
-                    {}
-                frontleft:
-                  frontleft_fisheye:
-                    {}
-                frontright:
-                  frontright_fisheye:
-                    {}
-                left:
-                  left_fisheye:
-                    fiducial_1:
-                      {}
-                right:
-                  right_fisheye:
-                    {}
-              rear_left_hip:
-                rear_left_upper_leg:
-                  rear_left_lower_leg:
-                    {}
-              rear_rail:
-                {}
-              rear_right_hip:
-                rear_right_upper_leg:
-                  rear_right_lower_leg:
-                    {}
-              vision:
-                filtered_fiducial_1:
+        vision:
+          world:
+            odom:
+              body:
+                arm_link_sh0:
+                  arm_link_sh1:
+                    arm_link_hr0:
+                      arm_link_el0:
+                        arm_link_el1:
+                          arm_link_wr0:
+                            arm_link_wr1:
+                              arm_link_fngr:
+                                {}
+                base_link:
                   {}
-            gpe:
-              {}
+                front_left_hip:
+                  front_left_upper_leg:
+                    front_left_lower_leg:
+                      {}
+                front_rail:
+                  {}
+                front_right_hip:
+                  front_right_upper_leg:
+                    front_right_lower_leg:
+                      {}
+                rear_left_hip:
+                  rear_left_upper_leg:
+                    rear_left_lower_leg:
+                      {}
+                rear_rail:
+                  {}
+                rear_right_hip:
+                  rear_right_upper_leg:
+                    rear_right_lower_leg:
+                      {}
       Update Interval: 0
+      Value: true
+    - Class: moveit_task_constructor/Motion Planning Tasks
+      Enabled: true
+      Interrupt Display: false
+      Loop Animation: false
+      Markers:
+        All at once?: false
+        Value: true
+      Name: Motion Planning Tasks
+      Robot:
+        Fixed Robot Color: 150; 50; 150
+        Links:
+          All Links Enabled: true
+          Expand Joint Details: false
+          Expand Link Details: false
+          Expand Tree: false
+          Link Tree Style: Links in Alphabetic Order
+          arm_link_el0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          arm_link_el1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          arm_link_fngr:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          arm_link_hr0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          arm_link_sh0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          arm_link_sh1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          arm_link_wr0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          arm_link_wr1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          body:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_left_hip:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_left_lower_leg:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_left_upper_leg:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_rail:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_right_hip:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_right_lower_leg:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_right_upper_leg:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rear_left_hip:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rear_left_lower_leg:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rear_left_upper_leg:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rear_rail:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rear_right_hip:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rear_right_lower_leg:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rear_right_upper_leg:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+        Robot Alpha: 0.5
+        Show Robot Collision: false
+        Show Robot Visual: true
+        Use Fixed Robot Color: false
+        Value: ""
+      Robot Description: robot_description
+      Scene:
+        Attached Body Color: 150; 50; 150
+        Scene Alpha: 0.8999999761581421
+        Scene Color: 50; 230; 50
+        Value: true
+        Voxel Coloring: Z-Axis
+        Voxel Rendering: Occupied Voxels
+      Show Trail: false
+      State Display Time: 0.05 s
+      Task Solution Topic: /solution
+      Tasks:
+        {}
+      Trail Step Size: 1
       Value: true
   Enabled: true
   Global Options:
@@ -576,6 +683,8 @@ Visualization Manager:
       Yaw: 6.075189113616943
     Saved: ~
 Window Geometry:
+  " - Slider":
+    collapsed: false
   Displays:
     collapsed: false
   Height: 1163
@@ -583,11 +692,13 @@ Window Geometry:
     collapsed: false
   Hide Left Dock: false
   Hide Right Dock: false
+  Motion Planning Tasks:
+    collapsed: false
   MotionPlanning:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002b400000431fc0200000006fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb000000100044006900730070006c006100790073010000003d0000012b000000c900fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000016e000001dd0000017d00fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a005600690065007700730100000351000000c8000000a400fffffffb00000024005200760069007a00560069007300750061006c0054006f006f006c0073004700750069010000041f0000004f0000004100ffffff000004c60000043100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000002b400000431fc0200000008fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb000000100044006900730070006c006100790073010000003d0000013d000000c900fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067000000010c0000017d0000017d00fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a00560069006500770073010000018000000103000000a400fffffffb00000024005200760069007a00560069007300750061006c0054006f006f006c00730047007500690100000289000000670000004100fffffffb000000120020002d00200053006c00690064006500720000000000ffffffff0000004100fffffffb0000002a004d006f00740069006f006e00200050006c0061006e006e0069006e00670020005400610073006b007301000002f600000178000000e700ffffff000004c60000043100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RvizVisualToolsGui:
     collapsed: false
   Views:

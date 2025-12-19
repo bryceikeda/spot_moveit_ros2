@@ -18,6 +18,7 @@ set(DEPENDENCIES
   moveit_msgs
   moveit_visual_tools
   spot_behavior_msgs
+  moveit_task_constructor_core
 )
 
 foreach(package ${DEPENDENCIES})
@@ -34,6 +35,8 @@ set(EXECUTABLES
   path_constrained_movement
   navigate_to_pose
   april_tag_detection
+  mtc_node
+  mtc_test
   )
 
 foreach(target ${EXECUTABLES})

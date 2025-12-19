@@ -56,11 +56,15 @@ def _build_moveit_config(mappings: dict) -> MoveItConfigsBuilder:
 
 def _create_move_group_node(moveit_config) -> Node:
     """Create the MoveIt move_group node."""
+    move_group_capabilities = {
+        "capabilities": "move_group/ExecuteTaskSolutionCapability"
+    }
+
     return Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
-        parameters=[moveit_config.to_dict()],
+        parameters=[moveit_config.to_dict(), move_group_capabilities],
         arguments=["--ros-args", "--log-level", "info"],
     )
 
@@ -133,11 +137,11 @@ def launch_setup(context, *args, **kwargs):
     # Build MoveIt configuration
     moveit_config = _build_moveit_config(mappings)
 
-    # --- Add static transform from 'world' to 'vision' frame ---
+    # --- Add static transform from 'world' to 'odom' frame ---
     static_tf_node = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
-        name="world_to_vision_tf",
+        name="world_to_odom_tf",
         arguments=[
             "0",
             "0",
@@ -159,6 +163,24 @@ def launch_setup(context, *args, **kwargs):
         _create_move_group_node(moveit_config),
         _create_ros2_control_node(),
     ]
+
+    # If hardware interface is mock, publish static transform from vision->world->odom->body, might be wrong
+    if hardware_interface == "mock":
+        vision_to_world_tfs = Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            name="vision_to_world_tfs",
+            arguments=["0", "0", "0", "0", "0", "0", "vision", "world"],
+            output="screen",
+        )
+        odom_to_body_tf = Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            name="odom_to_body_tf",
+            arguments=["0", "0", "0", "0", "0", "0", "odom", "body"],
+            output="screen",
+        )
+        nodes.extend([vision_to_world_tfs, odom_to_body_tf])
 
     # Add controller spawners
     nodes.extend(_create_controller_spawners(controllers))
