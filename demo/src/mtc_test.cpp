@@ -106,6 +106,14 @@ void MTCTaskNode::doTask()
   }
  	moveit_task_constructor_msgs::msg::Solution solution_msg;
 	task_->solutions().front()->toMsg(solution_msg);
+  RCLCPP_INFO(
+        LOGGER,
+        "MTC Solution: size=%zu id=%zu, sub_trajectory=%zu,traj 2=%zu",
+        task_->solutions().size(),
+        solution_msg.task_id.size(),
+        solution_msg.sub_trajectory.size(),
+        solution_msg.sub_trajectory[1].trajectory.joint_trajectory.points[0].positions.size()
+    );
 
 
   if (!exec_client_->wait_for_action_server(std::chrono::seconds(5)))

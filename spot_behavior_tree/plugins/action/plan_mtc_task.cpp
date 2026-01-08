@@ -1,7 +1,6 @@
 #include "spot_behavior_tree/plugins/action/plan_mtc_task.h"
 #include <rclcpp/rclcpp.hpp>
 #include <behaviortree_cpp/bt_factory.h>
-#include <moveit_task_constructor_msgs/msg/solution.hpp>
 
 using namespace moveit::task_constructor;
 
@@ -27,7 +26,16 @@ BT::NodeStatus PlanMTCTask::onStart()
         try
         {
             task_->init();
-            return task_->plan(1);
+            auto result = task_->plan(1);
+
+            if (result == moveit::core::MoveItErrorCode::SUCCESS &&
+                !task_->solutions().empty())
+            {
+                task_->introspection().publishSolution(*task_->solutions().front());
+                task_->solutions().front()->toMsg(solution_msg);
+            }
+
+            return result;
         }
         catch (const moveit::task_constructor::InitStageException& e)
         {
@@ -48,17 +56,14 @@ BT::NodeStatus PlanMTCTask::onRunning()
     }
 
     auto result = future_.get();
+
     if (result != moveit::core::MoveItErrorCode::SUCCESS ||
-        task_->solutions().empty())
+        solution_msg.sub_trajectory.empty())
     {
         RCLCPP_ERROR(logger_, "Planning failed");
         return BT::NodeStatus::FAILURE;
     }
 
-	moveit_task_constructor_msgs::msg::Solution solution_msg;
-	task_->solutions().front()->toMsg(solution_msg);
-
-    task_->introspection().publishSolution(*task_->solutions().front());
     setOutput("solution", solution_msg);
     return BT::NodeStatus::SUCCESS;
 }

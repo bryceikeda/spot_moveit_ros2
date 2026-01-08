@@ -5,6 +5,7 @@
 #include <moveit_msgs/msg/move_it_error_codes.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <moveit/task_constructor/task.h>
+#include <moveit_task_constructor_msgs/msg/solution.hpp>
 
 #include <future>
 
@@ -25,6 +26,7 @@ public:
 private:
     std::shared_ptr<moveit::task_constructor::Task> task_;
     std::future<moveit::core::MoveItErrorCode> future_;
+    moveit_task_constructor_msgs::msg::Solution solution_msg;
     rclcpp::Logger logger_;
 };
 
