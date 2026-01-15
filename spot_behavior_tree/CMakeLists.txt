@@ -35,6 +35,62 @@ ament_target_dependencies(bt_executor ${DEPENDENCIES})
 
 ######################################################
 # Build a client that call the sleep action (Plugin version)
+add_library(execute_trajectory_plugin SHARED plugins/action/execute_trajectory.cpp)
+list(APPEND plugin_libs execute_trajectory_plugin)
+
+# add_library(plan_mtc_cartesian_path_plugin SHARED plugins/action/plan_mtc_cartesian_path.cpp)
+# list(APPEND plugin_libs plan_mtc_cartesian_path_plugin)
+
+add_library(transform_pose_plugin SHARED plugins/action/transform_pose.cpp)
+list(APPEND plugin_libs transform_pose_plugin)
+
+add_library(generate_cuboid_grasp_poses_plugin SHARED plugins/action/generate_cuboid_grasp_poses.cpp)
+list(APPEND plugin_libs generate_cuboid_grasp_poses_plugin)
+
+add_library(get_collision_object_from_planning_scene_plugin SHARED plugins/action/get_collision_object_from_planning_scene.cpp)
+list(APPEND plugin_libs get_collision_object_from_planning_scene_plugin)
+
+add_library(setup_mtc_ignore_graspable_collisions_plugin SHARED plugins/action/setup_mtc_ignore_graspable_collisions.cpp)
+list(APPEND plugin_libs setup_mtc_ignore_graspable_collisions_plugin)
+
+add_library(reset_string_vector_plugin SHARED plugins/action/reset_string_vector.cpp)
+list(APPEND plugin_libs reset_string_vector_plugin)
+
+add_library(add_to_string_vector_plugin SHARED plugins/action/add_to_string_vector.cpp)
+list(APPEND plugin_libs add_to_string_vector_plugin)
+
+add_library(is_object_attached_to_plugin SHARED plugins/action/is_object_attached_to.cpp)
+list(APPEND plugin_libs is_object_attached_to_plugin)
+
+add_library(setup_mtc_attach_object_plugin SHARED plugins/action/setup_mtc_attach_object.cpp)
+list(APPEND plugin_libs setup_mtc_attach_object_plugin)
+
+add_library(setup_mtc_detach_object_plugin SHARED plugins/action/setup_mtc_detach_object.cpp)
+list(APPEND plugin_libs setup_mtc_detach_object_plugin)
+
+add_library(setup_mtc_ignore_collisions_between_objects_plugin SHARED plugins/action/setup_mtc_ignore_collisions_between_objects.cpp)
+list(APPEND plugin_libs setup_mtc_ignore_collisions_between_objects_plugin)
+
+add_library(reset_vector_plugin SHARED plugins/action/reset_vector.cpp)
+list(APPEND plugin_libs reset_vector_plugin)
+
+add_library(add_to_vector_plugin SHARED plugins/action/add_to_vector.cpp)
+list(APPEND plugin_libs add_to_vector_plugin)
+
+add_library(reset_pose_stamped_vector_plugin SHARED plugins/action/reset_pose_stamped_vector.cpp)
+list(APPEND plugin_libs reset_pose_stamped_vector_plugin)
+
+add_library(setup_mtc_batch_pose_ik_plugin SHARED plugins/action/setup_mtc_batch_pose_ik.cpp)
+list(APPEND plugin_libs setup_mtc_batch_pose_ik_plugin)
+
+add_library(setup_mtc_update_object_collision_rule_plugin SHARED plugins/action/setup_mtc_update_object_collision_rule.cpp)
+list(APPEND plugin_libs setup_mtc_update_object_collision_rule_plugin)
+
+add_library(setup_mtc_move_along_frame_axis_plugin SHARED plugins/action/setup_mtc_move_along_frame_axis.cpp)
+list(APPEND plugin_libs setup_mtc_move_along_frame_axis_plugin)
+
+add_library(setup_mtc_connect_with_rrt_plugin SHARED plugins/action/setup_mtc_connect_with_rrt.cpp)
+list(APPEND plugin_libs setup_mtc_connect_with_rrt_plugin)
 
 add_library(execute_mtc_task_plugin SHARED plugins/action/execute_mtc_task.cpp)
 list(APPEND plugin_libs execute_mtc_task_plugin)

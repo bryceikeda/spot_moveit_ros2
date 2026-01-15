@@ -1,0 +1,59 @@
+ <root BTCPP_format="4" >
+    <TreeNodeParams>
+      <Param name="object_name"/>
+    </TreeNodeParams>
+     <BehaviorTree ID="MTCGraspObject"
+        _description="Takes an object as input and grasps the object at that pose"
+        >
+        <Sequence name="root">
+          <SubTree ID="OpenGripper"/>
+          <InitializeMTCTask        task_id="grasp_object" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
+          <SetupMTCCurrentState task="{mtc_task}"/>    
+          <SetupMTCConnectWithRRT
+            acceleration_scale_factor="1.000000"
+            keep_orientation="false"
+            keep_orientation_link_names="arm_link_wr1"
+            keep_orientation_tolerance="0.100000"
+            link_padding="0.000000"
+            max_iterations="5000"
+            planning_group_name="arm"
+            task="{mtc_task}"
+            trajectory_sampling_rate="100"
+            velocity_scale_factor="1.000000"
+          />
+          <SetupMTCMoveAlongFrameAxis
+            acceleration_scale_factor="1.000000"
+            axis_frame="arm_link_wr1"
+            hand_frame="arm_link_wr1"
+            axis_x="1"
+            axis_y="0.000000"
+            axis_z="0.000000"
+            max_distance=".1"
+            min_distance=".1"
+            planning_group_name="arm"
+            task="{mtc_task}"
+            velocity_scale_factor="1.000000"
+            ignore_environment_collisions="false"
+          />
+          <GetCurrentPlanningScene service_name="/get_planning_scene" planning_scene_msg="{planning_scene}"/>
+          <GetCollisionObjectFromPlanningScene planning_scene="{planning_scene}" object_id="{object_name}" collision_object="{collision_object}"/>
+          <CreateStampedPose  reference_frame="arm_link_wr1" position_xyz=".2;0.0;0.0" orientation_xyzw=".7071;0;0;.7071" stamped_pose="{ee_to_tcp}"/>
+          <ResetPoseStampedVector vector="{grasp_poses}"/>
+          <GenerateCuboidGraspPoses target_object="{collision_object}" ee_to_tcp="{ee_to_tcp}" generate_x_axis_grasps="true" generate_y_axis_grasps="false" generate_z_axis_grasps="false" grasp_poses="{grasp_poses}"/>
+          <SetupMTCBatchPoseIK
+            end_effector_group="arm_link_wr1"
+            end_effector_link="gripper"
+            ik_group="arm"
+            ik_timeout_s="0.01"
+            max_ik_solutions="1"
+            monitored_stage="current state"
+            target_poses="{grasp_poses}"
+            task="{mtc_task}"
+          />
+          <PlanMTCTask task="{mtc_task}" solution="{solution}"/>
+          <ExecuteMTCTask action_name="/execute_task_solution" solution="{solution}" goal_duration_tolerance="-1.0"/>
+          <SubTree ID="CloseGripper"/>
+          <SubTree ID="MTCAttachObjectToLink" link_name="arm_link_wr1" object_id="{object_name}"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>

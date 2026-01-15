@@ -1,0 +1,44 @@
+<root BTCPP_format="4">
+  <BehaviorTree ID="MTCPickAndPlaceObject">
+    <Sequence name="root">
+      <AddRosNodeToBlackboard topic_name="node_to_blackboard"/>
+      <SubTree ID="TemplateAddObjectToPlanningScene" object_id="box1" dimensions=".04;.04;.2" position_xyz=".75;0;.2" orientation_xyzw="0;0;0;1" reference_frame="body" />
+      <SubTree ID="MTCGraspObject" object_name="box1"/>
+      <InitializeMTCTask        task_id="grasp_object" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
+      <SetupMTCCurrentState task="{mtc_task}"/>    
+      <SetupMTCMoveAlongFrameAxis
+        acceleration_scale_factor="1.000000"
+        axis_frame="body"
+        hand_frame="arm_link_wr1"
+        axis_x="0.000000"
+        axis_y="0.000000"
+        axis_z="1.0"
+        max_distance=".1"
+        min_distance=".1"
+        planning_group_name="arm"
+        task="{mtc_task}"
+        velocity_scale_factor="1.000000"
+        ignore_environment_collisions="false"
+      />
+      <SetupMTCMoveAlongFrameAxis
+        acceleration_scale_factor="1.000000"
+        axis_frame="arm_link_wr1"
+        hand_frame="arm_link_wr1"
+        axis_x="-1.000000"
+        axis_y="0.000000"
+        axis_z="0.0"
+        max_distance=".1"
+        min_distance=".1"
+        planning_group_name="arm"
+        task="{mtc_task}"
+        velocity_scale_factor="1.000000"
+        ignore_environment_collisions="false"
+      />
+      <PlanMTCTask task="{mtc_task}" solution="{solution}"/>
+      <ExecuteMTCTask action_name="/execute_task_solution" solution="{solution}" goal_duration_tolerance="-1.0"/>
+      <CreateStampedPose   reference_frame="body" position_xyz="0.7;-0.1;.2" orientation_xyzw="0;0.7071068;0;0.7071068;" stamped_pose="{place_pose}"/>
+      <SubTree ID="MTCMoveToPlaceObject" object_name="box1" place_pose="{place_pose}"/>
+      <CreateStampedPose   reference_frame="body" position_xyz="0.7;-0.1;.2" orientation_xyzw="0;0.7071068;0;0.7071068;" stamped_pose="{place_pose}"/>
+    </Sequence>
+  </BehaviorTree>
+</root> 

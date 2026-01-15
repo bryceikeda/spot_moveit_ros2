@@ -1,0 +1,33 @@
+ <root BTCPP_format="4" >
+    <TreeNodeParams>
+      <Param name="place_pose"/>
+      <Param name="object_name"/>
+    </TreeNodeParams>
+     <BehaviorTree ID="MTCMoveToPlaceObject"
+        _description="Takes an object as input and grasps the object at that pose"
+        >
+        <Sequence name="root">
+          <InitializeMTCTask        task_id="move_to_place" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
+          <SetupMTCCurrentState task="{mtc_task}"/>    
+          <SetupMTCPlanToPose
+            ik_frame="arm_link_wr1"
+            planning_group_name="arm"
+            target_pose="{place_pose}"
+            task="{mtc_task}"
+            acceleration_scale_factor="1.000000"
+            keep_orientation="false"
+            keep_orientation_link_names="arm_link_wr1"
+            keep_orientation_tolerance="0.100000"
+            link_padding="0.000000"
+            max_iterations="5000"
+            monitored_stage="current state"
+            trajectory_sampling_rate="100"
+            velocity_scale_factor="1.000000"
+          />
+          <PlanMTCTask task="{mtc_task}" solution="{solution}"/>
+          <ExecuteMTCTask action_name="/execute_task_solution" solution="{solution}" goal_duration_tolerance="-1.0"/>
+          <SubTree ID="OpenGripper"/>
+          <SubTree ID="MTCDetachObjectFromLink" object_name="{object_name}"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>

@@ -1,0 +1,7 @@
+ <root BTCPP_format="4" >
+     <BehaviorTree ID="OpenGripper">
+        <Sequence name="root">
+          <MoveGripperAction    action_name="/gripper_controller/gripper_cmd" position="-1.57"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>

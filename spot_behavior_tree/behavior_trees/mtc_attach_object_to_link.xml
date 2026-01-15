@@ -1,0 +1,18 @@
+ <root BTCPP_format="4" >
+     <TreeNodeParams>
+        <Param name="link_name"/>
+        <Param name="object_id"/>
+    </TreeNodeParams>
+     <BehaviorTree ID="MTCAttachObjectToLink">
+        <Sequence name="root">
+          <InitializeMTCTask task_id="attach_object" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
+          <SetupMTCCurrentState task="{mtc_task}"/>    
+          <SetupMTCIgnoreGraspableCollisions task="{mtc_task}" object_name="{object_id}" hand_name="gripper" allow_collisions="true"/>
+          <SetupMTCAttachObject frame_id="{link_name}" object_name="{object_id}" task="{mtc_task}"/>
+          <PlanMTCTask task="{mtc_task}" solution="{solution}"/>
+          <ExecuteMTCTask action_name="/execute_task_solution" solution="{solution}" goal_duration_tolerance="-1.0"/>
+          <GetCurrentPlanningScene service_name="/get_planning_scene" planning_scene_msg="{planning_scene}"/>
+          <IsObjectAttachedTo link_name="{link_name}" object_id="{object_id}" planning_scene="{planning_scene}"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>

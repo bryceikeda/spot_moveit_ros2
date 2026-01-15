@@ -1,0 +1,52 @@
+ <root BTCPP_format="4" >
+     <BehaviorTree ID="MTCCartesianTest">
+        <Sequence name="root">
+          <AddRosNodeToBlackboard topic_name="node_to_blackboard"/>
+          <InitializeMTCTask        task_id="move_to_pose" task="{move_to_pose_task}" timeout="10.0" trajectory_monitoring="false"/>
+          <CreateStampedPose          reference_frame="body" position_xyz="0.55;-0.05;0.8" orientation_xyzw="0;0;0;1" stamped_pose="{target_pose}"/>
+          <SetupMTCCurrentState task="{move_to_pose_task}"/>       
+          <SetupMTCPlanToPose
+            ik_frame="arm_link_wr1"
+            planning_group_name="arm"
+            target_pose="{target_pose}"
+            task="{move_to_pose_task}"
+            acceleration_scale_factor="1.000000"
+            keep_orientation="false"
+            keep_orientation_link_names="arm_link_wr1"
+            keep_orientation_tolerance="0.100000"
+            link_padding="0.000000"
+            max_iterations="5000"
+            monitored_stage="current state"
+            trajectory_sampling_rate="100"
+            velocity_scale_factor="1.000000"
+          />
+          <PlanMTCTask task="{move_to_pose_task}" solution="{solution}"/>
+          <ExecuteMTCTask action_name="/execute_task_solution" solution="{solution}" goal_duration_tolerance="-1.0"/>
+          <CreateStampedPose          reference_frame="body" position_xyz="0.55;-0.05;0.6" orientation_xyzw="0;0;0;1" stamped_pose="{stamped_pose2}"/>
+          <AddPoseStampedToVector     input="{stamped_pose2}" vector="{pose_stamped_vector}"/>
+          <CreateStampedPose          reference_frame="body" position_xyz="0.55;-0.25;0.6" orientation_xyzw="0;0;0;1" stamped_pose="{stamped_pose3}"/>
+          <AddPoseStampedToVector     input="{stamped_pose3}" vector="{pose_stamped_vector}"/>
+          <CreateStampedPose          reference_frame="body" position_xyz="0.35;-0.05;0.8" orientation_xyzw="0;0;0;1" stamped_pose="{stamped_pose4}"/>
+          <AddPoseStampedToVector     input="{stamped_pose4}" vector="{pose_stamped_vector}"/>
+          <CreateStampedPose          reference_frame="arm_link_wr1-wi" position_xyz="0;0;0" orientation_xyzw="0;0;0;1" stamped_pose="{ik_frame}"/>
+          <PlanMTCCartesianPath
+            path="{pose_stamped_vector}"
+            planning_group_name="gripper"
+            ik_frame="{ik_frame}"
+            position_only="false"
+            velocity_scale_factor="0.5"
+            acceleration_scale_factor="0.5"
+            trajectory_sampling_rate="100"
+            joint_trajectory_msg="{joint_trajectory_msg}"
+            debug_solution="{debug_solution}"
+          />
+          <ExecuteMTCTrajectory
+            goal_duration_tolerance="-1.000000"
+            goal_position_tolerance="0.000000"
+            goal_time_tolerance="0.000000"
+            joint_trajectory_msg="{joint_trajectory_msg}"
+            execute_follow_joint_trajectory_action_name="/arm_controller/follow_joint_trajectory"
+          />
+        </Sequence>
+     </BehaviorTree>
+ </root>

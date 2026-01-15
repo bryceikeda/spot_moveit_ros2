@@ -4,7 +4,7 @@
             <AddRosNodeToBlackboard topic_name="node_to_blackboard"/>
             <SetupMoveGroup             planning_group_name="arm" move_group="{move_group}"/>
             <SetupVisualTools           move_group="{move_group}" base_frame="body" visual_tools_topic="moveit_visual_tools" visual_tools="{visual_tools}"/>
-            <SubTree    ID="TemplateMoveToPose"
+            <SubTree    ID="MoveItMoveToPose"
                         move_group="{move_group}"
                         position_xyz="0.28;-0.2;0.5"
                         orientation_xyzw="0;0;0;1"

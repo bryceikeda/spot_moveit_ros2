@@ -1,0 +1,21 @@
+ <root BTCPP_format="4" >
+    <TreeNodeParams>
+      <Param name="object_name"/>
+    </TreeNodeParams>
+     <BehaviorTree ID="MTCDetachObjectFromLink"
+        _description="Releases an object"
+        >
+        <Sequence name="root">
+          <InitializeMTCTask task_id="detach_object" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
+          <SetupMTCCurrentState task="{mtc_task}"/>    
+          <SetupMTCDetachObject frame_id="arm_link_wr1" object_name="{object_name}" task="{mtc_task}"/>
+          <SetupMTCIgnoreGraspableCollisions task="{mtc_task}" object_name="{object_name}" hand_name="gripper" allow_collisions="false"/>
+          <PlanMTCTask task="{mtc_task}" solution="{solution}"/>
+          <ExecuteMTCTask action_name="/execute_task_solution" solution="{solution}" goal_duration_tolerance="-1.0"/>
+          <GetCurrentPlanningScene service_name="/get_planning_scene" planning_scene_msg="{planning_scene}"/>
+          <Inverter>
+            <IsObjectAttachedTo link_name="arm_link_wr1" object_id="{object_name}" planning_scene="{planning_scene}"/>
+          </Inverter>
+        </Sequence>
+     </BehaviorTree>
+ </root>

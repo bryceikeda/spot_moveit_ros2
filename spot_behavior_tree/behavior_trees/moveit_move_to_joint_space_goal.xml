@@ -3,7 +3,7 @@
         <Param name="move_group"/>
         <Param name="joint_values"/>
     </TreeNodeParams>
-     <BehaviorTree ID="TemplateMoveToJointSpaceGoal">
+     <BehaviorTree ID="MoveItMoveToJointSpaceGoal">
         <Sequence name="root">
             <SetMoveItJointValueTarget      joint_values="{joint_values}" move_group="{move_group}"/>
             <PlanMoveItTarget               robot_trajectory_msg="{robot_trajectory_msg}" move_group="{move_group}" />

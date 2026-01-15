@@ -6,7 +6,7 @@
         <Param name="reference_frame"/>
         <Param name="visual_tools"/>
     </TreeNodeParams>
-     <BehaviorTree ID="TemplateMoveToPoseMTC">
+     <BehaviorTree ID="MoveItMoveToPose">
         <Sequence name="root">
             <CreateStampedPose          reference_frame="{reference_frame}" position_xyz="{position_xyz}" orientation_xyzw="{orientation_xyzw}" stamped_pose="{stamped_pose}"/>
             <VisualizePose              stamped_pose="{stamped_pose}" visual_tools="{visual_tools}"/>

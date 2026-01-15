@@ -5,7 +5,6 @@ bool ExecuteMTCTask::setGoal(RosActionNode::Goal& goal)
 {
     if (!getInput("solution", goal.solution))
         throw BT::RuntimeError("ExecuteMTCTask -> Missing required input [solution]");
-
     // --- Optional goal duration tolerance ---
     double goal_duration_tolerance;
     if (getInput("goal_duration_tolerance", goal_duration_tolerance))
