@@ -1,0 +1,18 @@
+ <root BTCPP_format="4" >
+     <TreeNodeParams>
+        <Param  name="group_state"/>
+        <Param name="planning_group_name"/>
+      </TreeNodeParams>
+     <BehaviorTree ID="MTCPlanMoveToGroupState">
+        <Sequence name="root">
+          <InitializeMTCTask task_id="move to pose" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
+          <SetupMTCCurrentState task="{mtc_task}"/>    
+          <SetupMTCMoveToGroupState
+            group_state="{group_state}"
+            planning_group_name="{planning_group_name}"
+            task="{mtc_task}"
+          />
+          <PlanMTCTask task="{mtc_task}" solution="{solution}"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>

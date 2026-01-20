@@ -2,9 +2,9 @@
   <BehaviorTree ID="MTCPickAndPlaceObject">
     <Sequence name="root">
       <AddRosNodeToBlackboard topic_name="node_to_blackboard"/>
-      <SubTree ID="TemplateAddObjectToPlanningScene" object_id="box1" dimensions=".04;.04;.2" position_xyz=".75;0;.2" orientation_xyzw="0;0;0;1" reference_frame="body" />
+      <SubTree ID="MoveItAddObjectToPlanningScene" object_id="box1" dimensions=".04;.04;.2" position_xyz=".75;0;.2" orientation_xyzw="0;0;0;1" reference_frame="body" />
       <SubTree ID="MTCGraspObject" object_name="box1"/>
-      <InitializeMTCTask        task_id="grasp_object" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
+      <InitializeMTCTask task_id="grasp_object" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
       <SetupMTCCurrentState task="{mtc_task}"/>    
       <SetupMTCMoveAlongFrameAxis
         acceleration_scale_factor="1.000000"
@@ -39,6 +39,7 @@
       <CreateStampedPose   reference_frame="body" position_xyz="0.7;-0.1;.2" orientation_xyzw="0;0.7071068;0;0.7071068;" stamped_pose="{place_pose}"/>
       <SubTree ID="MTCMoveToPlaceObject" object_name="box1" place_pose="{place_pose}"/>
       <CreateStampedPose   reference_frame="body" position_xyz="0.7;-0.1;.2" orientation_xyzw="0;0.7071068;0;0.7071068;" stamped_pose="{place_pose}"/>
+      <SubTree ID="MTCPlanMoveToGroupState" group_state="stow" planning_group_name="arm"/>
     </Sequence>
   </BehaviorTree>
 </root> 

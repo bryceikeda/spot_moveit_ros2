@@ -7,7 +7,6 @@
 #include <moveit/task_constructor/solvers/pipeline_planner.h>
 #include <moveit/task_constructor/task.h>
 #include <moveit/task_constructor/stages/move_relative.h>
-#include <moveit/task_constructor/solvers/pipeline_planner.h>
 #include "spot_behavior_tree/string_vector.h"
 #include <moveit_msgs/msg/constraints.hpp>
 #include <moveit_msgs/msg/orientation_constraint.hpp>

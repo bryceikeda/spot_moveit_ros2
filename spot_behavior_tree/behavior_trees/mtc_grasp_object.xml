@@ -7,7 +7,7 @@
         >
         <Sequence name="root">
           <SubTree ID="OpenGripper"/>
-          <InitializeMTCTask        task_id="grasp_object" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
+          <InitializeMTCTask task_id="grasp_object" task="{mtc_task}" timeout="10.0" trajectory_monitoring="false"/>
           <SetupMTCCurrentState task="{mtc_task}"/>    
           <SetupMTCConnectWithRRT
             acceleration_scale_factor="1.000000"

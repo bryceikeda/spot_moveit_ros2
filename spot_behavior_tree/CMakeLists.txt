@@ -35,6 +35,9 @@ ament_target_dependencies(bt_executor ${DEPENDENCIES})
 
 ######################################################
 # Build a client that call the sleep action (Plugin version)
+add_library(setup_mtc_move_to_group_state_plugin SHARED plugins/action/setup_mtc_move_to_group_state.cpp)
+list(APPEND plugin_libs setup_mtc_move_to_group_state_plugin)
+
 add_library(execute_trajectory_plugin SHARED plugins/action/execute_trajectory.cpp)
 list(APPEND plugin_libs execute_trajectory_plugin)
 
