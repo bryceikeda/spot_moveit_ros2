@@ -5,26 +5,26 @@
             <SetupMoveGroup             planning_group_name="arm" move_group="{arm_move_group}"/>
             <SetupMoveGroup             planning_group_name="gripper" move_group="{gripper_move_group}"/>
             <SetupVisualTools           move_group="{arm_move_group}" base_frame="body" visual_tools_topic="moveit_visual_tools" visual_tools="{visual_tools}" />
-            <SubTree    ID="TemplateMoveToPose"
+            <SubTree    ID="MoveItMoveToPose"
                         move_group="{arm_move_group}"
                         position_xyz="0.6;0;0.25"
                         orientation_xyzw="0;.707;0;.707"
                         reference_frame="body"
                         visual_tools="{visual_tools}"
             />
-            <SubTree    ID="TemplateAddObjectToPlanningScene"
+            <SubTree    ID="MoveItAddObjectToPlanningScene"
                         object_id="box1"
                         dimensions="0.1;1.5;0.45"
                         position_xyz=".825;0;-.1"
                         orientation_xyzw="0;0;0;1"
                         reference_frame="body"
             />
-            <SubTree    ID="TemplateMoveToNamedTarget"
+            <SubTree    ID="MoveItMoveToNamedTarget"
                         move_group="{gripper_move_group}"
                         target_name="open"
                         visual_tools="{visual_tools}"
             />
-            <SubTree    ID="TemplateAddObjectToPlanningScene"
+            <SubTree    ID="MoveItAddObjectToPlanningScene"
                         object_id="box2"
                         dimensions=".04;.04;.2"
                         position_xyz=".275;0;.01"
@@ -37,19 +37,19 @@
                         link="arm_link_wr0"
                         touch_links="arm_link_fngr;arm_link_wr1"
             />
-            <SubTree    ID="TemplateMoveToNamedTarget"
+            <SubTree    ID="MoveItMoveToNamedTarget"
                         move_group="{gripper_move_group}"
                         target_name="close"
                         visual_tools="{visual_tools}"
             />
-            <SubTree    ID="TemplateMoveToPose"
+            <SubTree    ID="MoveItMoveToPose"
                         move_group="{arm_move_group}"
                         position_xyz="0.975;0;0.25"
                         orientation_xyzw="0;.707;0;.707"
                         reference_frame="body"
                         visual_tools="{visual_tools}"
             />
-            <SubTree    ID="TemplateMoveToNamedTarget"
+            <SubTree    ID="MoveItMoveToNamedTarget"
                         move_group="{gripper_move_group}"
                         target_name="open"
                         visual_tools="{visual_tools}"
@@ -58,12 +58,12 @@
                         move_group="{arm_move_group}"
                         object_id="box2"
             />
-            <SubTree    ID="TemplateMoveToNamedTarget"
+            <SubTree    ID="MoveItMoveToNamedTarget"
                         move_group="{arm_move_group}"
                         target_name="stow"
                         visual_tools="{visual_tools}"
             />
-            <SubTree    ID="TemplateMoveToNamedTarget"
+            <SubTree    ID="MoveItMoveToNamedTarget"
                         move_group="{gripper_move_group}"
                         target_name="close"
                         visual_tools="{visual_tools}"

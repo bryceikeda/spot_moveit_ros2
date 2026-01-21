@@ -10,8 +10,10 @@
             <PlanMoveItTarget               robot_trajectory_msg="{robot_trajectory_msg}" move_group="{move_group}" />
             <ExecuteMoveItTrajectory        action_name="execute_trajectory" robot_trajectory_msg="{robot_trajectory_msg}"/>
             <SetMoveItJointValueTarget      joint_values="-1.36136;-1.90241;2.0944;1.6057;1.36136;-1.78024" move_group="{move_group}"/>
-            <PlanMoveItTarget               robot_trajectory_msg="{robot_trajectory_msg}" move_group="{move_group}" />
-            <ExecuteMoveItTrajectory        action_name="execute_trajectory" robot_trajectory_msg="{robot_trajectory_msg}"/>
+            <SubTree    ID="MoveItMoveToJointSpaceGoal"
+                        move_group="{move_group}"
+                        joint_values="-1.36136;-1.90241;2.0944;1.6057;1.36136;-1.78024"
+            />
         </Sequence>
      </BehaviorTree>
  </root>

@@ -30,6 +30,9 @@ setup(
     entry_points={
         "console_scripts": [
             "spot_control_node = spot_core.spot_control_node:main",
+            "april_tag = spot_core.perception.april_tag_tracker:main",
+            "world_object = spot_core.perception.world_object_tracker:main",
+            "collision_object_spawner = spot_core.perception.collision_object_spawner:main",
         ],
     },
 )

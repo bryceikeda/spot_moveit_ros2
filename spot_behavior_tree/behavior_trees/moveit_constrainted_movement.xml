@@ -4,7 +4,12 @@
             <AddRosNodeToBlackboard topic_name="node_to_blackboard"/>
             <SetupMoveGroup             planning_group_name="arm" move_group="{move_group}"/>
             <SetupVisualTools           move_group="{move_group}" base_frame="body" visual_tools_topic="moveit_visual_tools" visual_tools="{visual_tools}"/>
-            <SubTree    ID="TemplateMoveToPose"
+            <SubTree    ID="MoveItMoveToNamedTarget"
+                        move_group="{move_group}"
+                        target_name="stow"
+                        visual_tools="{visual_tools}"
+            />
+            <SubTree    ID="MoveItMoveToPose"
                         move_group="{move_group}"
                         position_xyz=".4;0.15;0.4"
                         orientation_xyzw="0;0;0;1"
@@ -14,7 +19,7 @@
             <InitializeMotionConstraints constraints="{constriants}"/>
             <AppendOrientationConstraint constraints="{constriants}" tolerance_xyz="0.3;0.3;0.3" link_name="arm_link_wr1" frame_id="body" orientation_xyzw="0;0;0;1" weight="1.0"/>
             <SetMoveItPlanningTime       move_group="{move_group}" seconds="15.0"/>
-            <SubTree    ID="TemplateMoveToPose"
+            <SubTree    ID="MoveItMoveToPose"
                         move_group="{move_group}"
                         position_xyz=".4;-0.15;0.6"
                         orientation_xyzw="0;0;0;1"

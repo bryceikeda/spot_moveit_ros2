@@ -17,7 +17,8 @@ set(DEPENDENCIES
   control_msgs
   moveit_msgs
   moveit_visual_tools
-  nav2_msgs
+  spot_behavior_msgs
+  moveit_task_constructor_core
 )
 
 foreach(package ${DEPENDENCIES})
@@ -33,6 +34,8 @@ set(EXECUTABLES
   move_to_pose
   path_constrained_movement
   navigate_to_pose
+  mtc_node
+  mtc_test
   )
 
 foreach(target ${EXECUTABLES})
@@ -49,10 +52,10 @@ install(DIRECTORY launch/
   DESTINATION share/${PROJECT_NAME}/launch
 )
 # # Python package
-# ament_python_install_package(${PROJECT_NAME})
-# install(PROGRAMS demo/test_moveit_plans.py
-#   DESTINATION lib/${PROJECT_NAME}
-# )
+install(PROGRAMS 
+  scripts/navigate_to_fiducial.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 # Testing
 if(BUILD_TESTING)

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
-from nav2_msgs.action import NavigateToPose
+from spot_behavior_msgs.action import NavigateToPose, NavigateToFiducial
 
 from geometry_msgs.msg import PoseStamped
 
@@ -24,7 +24,7 @@ class NavigationActionServer(Node):
 
         self.pose_goal = PoseStamped()
 
-        self._action_server = ActionServer(
+        self.navigate_to_pose_server = ActionServer(
             self,
             NavigateToPose,
             "/navigation/navigate_to_pose",
@@ -33,12 +33,22 @@ class NavigationActionServer(Node):
             cancel_callback=self.navigate_to_pose_cancel_callback,
         )
 
+        self.navigate_to_fiducial_server = ActionServer(
+            self,
+            NavigateToFiducial,
+            "/navigation/navigate_to_fiducial",
+            execute_callback=self.navigate_to_fiducial_execute_callback,
+            goal_callback=self.navigate_to_fiducial_goal_callback,
+            cancel_callback=self.navigate_to_fiducial_cancel_callback,
+        )
+
         self.get_logger().info(
-            "NavigationActionServer started on /navigation/navigate_to_pose"
+            "NavigationActionServer started on /navigation/navigate_to_pose"  # and /navigation/navigate_to_waypoint"
         )
 
     def destroy(self):
-        self._action_server.destroy()
+        self.navigate_to_pose_server.destroy()
+        self.navigate_to_fiducial_server.destroy()
         super().destroy_node()
 
     # --------------------------
@@ -68,7 +78,7 @@ class NavigationActionServer(Node):
         # Execute navigation (your own Spot SDK logic)
         try:
             outcome = self._spot_navigation_controller.navigate_to_pose(
-                pose, True  # Pass just the Pose, not PoseStamped
+                pose  # Pass just the Pose, not PoseStamped
             )
         except Exception as e:
             self.get_logger().error(f"Navigation failed: {e}")
@@ -78,6 +88,45 @@ class NavigationActionServer(Node):
 
         # Construct result object
         result = NavigateToPose.Result()
+        if outcome:
+            goal_handle.succeed()
+            self.get_logger().info("Navigation succeeded.")
+        else:
+            goal_handle.abort()
+            self.get_logger().error("Navigation failed.")
+
+        return result
+
+    def navigate_to_fiducial_goal_callback(
+        self, goal_request: NavigateToFiducial.Goal
+    ) -> GoalResponse:
+        self.get_logger().info("Received NavigateToFiducial goal request.")
+        return GoalResponse.ACCEPT
+
+    def navigate_to_fiducial_cancel_callback(self, goal_handle):
+        self.get_logger().warn("Cancel request received (not implemented).")
+        return CancelResponse.ACCEPT
+
+    async def navigate_to_fiducial_execute_callback(self, goal_handle):
+        """Execute navigation request."""
+        goal_msg = goal_handle.request
+        fiducial_name = goal_msg.fiducial_name
+
+        self.get_logger().info(f"Executing navigation to: " f"({fiducial_name})")
+
+        # Execute navigation (your own Spot SDK logic)
+        try:
+            outcome = self._spot_navigation_controller.navigate_to_fiducial(
+                fiducial_name
+            )
+        except Exception as e:
+            self.get_logger().error(f"Navigation failed: {e}")
+            result = NavigateToFiducial.Result()
+            goal_handle.abort()
+            return result
+
+        # Construct result object
+        result = NavigateToFiducial.Result()
         if outcome:
             goal_handle.succeed()
             self.get_logger().info("Navigation succeeded.")

@@ -168,6 +168,29 @@ class SpotCommander(Node):
         self.get_logger().info(f"Issued robot command with ID: {command_id}")
         return command_id
 
+    def send_robot_command_async(
+        self, command, duration_s: Optional[float] = None
+    ) -> Optional[int]:
+        """Send a robot command and return command ID."""
+        if not self.has_control():
+            self.get_logger().warn("Cannot send async command: no control of robot.")
+            return None
+
+        if duration_s is None:
+            command_id = self.command_client.robot_command_async(
+                command,
+                timesync_endpoint=self.time_sync.endpoint,
+            )
+        else:
+            command_id = self.command_client.robot_command_async(
+                command,
+                end_time_secs=time.time() + duration_s,
+                timesync_endpoint=self.time_sync.endpoint,
+            )
+
+        self.get_logger().info(f"Issued robot async command with ID: {command_id}")
+        return command_id
+
     def safely_power_off(self) -> None:
         """Power Spot off safely."""
         self._robot.power_off(cut_immediately=False, timeout_sec=20)

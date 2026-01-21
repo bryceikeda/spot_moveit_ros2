@@ -92,6 +92,7 @@ int main(int argc, char* argv[])
   rclcpp::init(argc, argv);
 
   rclcpp::NodeOptions options;
+  options.automatically_declare_parameters_from_overrides(true);
   auto action_server = std::make_shared<MyActionServer>(options);
 
   // TODO: This workaround is for a bug in MultiThreadedExecutor where it can deadlock when spinning without a timeout.

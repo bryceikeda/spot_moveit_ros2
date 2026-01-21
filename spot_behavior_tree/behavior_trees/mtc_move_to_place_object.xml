@@ -1,0 +1,16 @@
+ <root BTCPP_format="4" >
+    <TreeNodeParams>
+      <Param name="place_pose"/>
+      <Param name="object_name"/>
+    </TreeNodeParams>
+     <BehaviorTree ID="MTCMoveToPlaceObject"
+        _description="Takes an object as input and grasps the object at that pose"
+        >
+        <Sequence name="root">
+          <SubTree ID="MTCPlanMoveToPose" target_pose="{place_pose}" solution="{solution}"/>
+          <ExecuteMTCTask action_name="/execute_task_solution" solution="{solution}" goal_duration_tolerance="-1.0"/>
+          <SubTree ID="OpenGripper"/>
+          <SubTree ID="MTCDetachObjectFromLink" object_name="{object_name}"/>
+        </Sequence>
+     </BehaviorTree>
+ </root>

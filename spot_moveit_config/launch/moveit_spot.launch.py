@@ -44,7 +44,7 @@ def _build_moveit_config(mappings: dict) -> MoveItConfigsBuilder:
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(
             default_planning_pipeline="ompl",
-            pipelines=["ompl", "chomp", "pilz_industrial_motion_planner"],
+            pipelines=["ompl"],
         )
         .planning_scene_monitor(
             publish_robot_description=True, publish_robot_description_semantic=True
@@ -56,11 +56,15 @@ def _build_moveit_config(mappings: dict) -> MoveItConfigsBuilder:
 
 def _create_move_group_node(moveit_config) -> Node:
     """Create the MoveIt move_group node."""
+    move_group_capabilities = {
+        "capabilities": "move_group/ExecuteTaskSolutionCapability"
+    }
+
     return Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
-        parameters=[moveit_config.to_dict()],
+        parameters=[moveit_config.to_dict(), move_group_capabilities],
         arguments=["--ros-args", "--log-level", "info"],
     )
 
@@ -96,18 +100,16 @@ def _create_robot_state_publisher(moveit_config) -> Node:
     )
 
 
-def _create_ros2_control_node() -> Node:
-    """Create ros2_control node."""
+def _create_ros2_control_node(moveit_config) -> Node:
+    """Create ros2_control node with robot_description already loaded."""
     pkg_share = get_package_share_directory("spot_moveit_config")
     controllers_path = Path(pkg_share) / "config" / "ros2_controllers.yaml"
 
     return Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[str(controllers_path)],
-        remappings=[
-            ("/controller_manager/robot_description", "/robot_description"),
-        ],
+        parameters=[moveit_config.robot_description, str(controllers_path)],
+        remappings=[("/controller_manager/robot_description", "/robot_description")],
         output="screen",
     )
 
@@ -133,21 +135,29 @@ def launch_setup(context, *args, **kwargs):
     # Build MoveIt configuration
     moveit_config = _build_moveit_config(mappings)
 
-    # --- Add static transform from 'world' to 'vision' frame ---
+    # --- Add static transform from 'world' to 'odom' frame ---
     static_tf_node = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
-        name="world_to_vision_tf",
+        name="world_to_odom_tf",
         arguments=[
+            "--x",
             "0",
+            "--y",
             "0",
+            "--z",
             "0",
+            "--roll",
             "0",
+            "--pitch",
             "0",
+            "--yaw",
             "0",
+            "--frame-id",
             "world",
+            "--child-frame-id",
             "odom",
-        ],  # x, y, z, roll, pitch, yaw
+        ],
         output="screen",
     )
 
@@ -157,8 +167,60 @@ def launch_setup(context, *args, **kwargs):
         _create_rviz_node(moveit_config),
         _create_robot_state_publisher(moveit_config),
         _create_move_group_node(moveit_config),
-        _create_ros2_control_node(),
+        _create_ros2_control_node(moveit_config),
     ]
+
+    # If hardware interface is mock, publish static transform from vision->world->odom->body, might be wrong
+    if hardware_interface == "mock":
+        vision_to_world_tfs = Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            name="vision_to_world_tfs",
+            arguments=[
+                "--x",
+                "0",
+                "--y",
+                "0",
+                "--z",
+                "0",
+                "--roll",
+                "0",
+                "--pitch",
+                "0",
+                "--yaw",
+                "0",
+                "--frame-id",
+                "vision",
+                "--child-frame-id",
+                "world",
+            ],
+            output="screen",
+        )
+        odom_to_body_tf = Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            name="odom_to_body_tf",
+            arguments=[
+                "--x",
+                "0",
+                "--y",
+                "0",
+                "--z",
+                "0",
+                "--roll",
+                "0",
+                "--pitch",
+                "0",
+                "--yaw",
+                "0",
+                "--frame-id",
+                "odom",
+                "--child-frame-id",
+                "body",
+            ],
+            output="screen",
+        )
+        nodes.extend([vision_to_world_tfs, odom_to_body_tf])
 
     # Add controller spawners
     nodes.extend(_create_controller_spawners(controllers))

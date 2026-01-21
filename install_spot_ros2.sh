@@ -37,9 +37,11 @@ source /opt/ros/humble/setup.bash && rosdep update && rosdep install --from-path
 # Install Qt5UiTools
 sudo apt-get install -y qttools5-dev
 
-# Install MoveIt and visualizer
+# Install MoveIt and behaviortree cpp
 sudo apt-get install ros-humble-moveit
 sudo apt-get install ros-humble-moveit-visual-tools
+#sudo apt-get install ros-humble-behaviortree-cpp
+#sudo apt-get install ros-humble-moveit-task-constructor-core
 
 # Install the dist-utils
 sudo apt-get install -y python3-distutils
@@ -57,5 +59,11 @@ wget -q -O /tmp/spot-cpp-sdk_${SDK_VERSION}_${ARCH}.deb https://github.com/bdaii
 sudo dpkg -i /tmp/spot-cpp-sdk_${SDK_VERSION}_${ARCH}.deb
 rm /tmp/spot-cpp-sdk_${SDK_VERSION}_${ARCH}.deb
 
+# Install apriltags
+cd apriltag
+sudo cmake -B build -DCMAKE_BUILD_TYPE=Release
+sudo cmake --build build --target install ARCH="$ARCH"
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
 cd ..
 colcon build --symlink-install

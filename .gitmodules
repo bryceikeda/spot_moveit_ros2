@@ -4,3 +4,7 @@
 [submodule "BehaviorTree.ROS2"]
 	path = BehaviorTree.ROS2
 	url = https://github.com/BehaviorTree/BehaviorTree.ROS2.git
+[submodule "moveit_task_constructor"]
+	path = moveit_task_constructor
+	url = https://github.com/moveit/moveit_task_constructor.git
+	branch = humble
