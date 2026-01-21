@@ -34,7 +34,6 @@ set(EXECUTABLES
   move_to_pose
   path_constrained_movement
   navigate_to_pose
-  april_tag_detection
   mtc_node
   mtc_test
   )

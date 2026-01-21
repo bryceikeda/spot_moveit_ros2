@@ -37,9 +37,11 @@ source /opt/ros/humble/setup.bash && rosdep update && rosdep install --from-path
 # Install Qt5UiTools
 sudo apt-get install -y qttools5-dev
 
-# Install MoveIt and visualizer
+# Install MoveIt and behaviortree cpp
 sudo apt-get install ros-humble-moveit
 sudo apt-get install ros-humble-moveit-visual-tools
+#sudo apt-get install ros-humble-behaviortree-cpp
+#sudo apt-get install ros-humble-moveit-task-constructor-core
 
 # Install the dist-utils
 sudo apt-get install -y python3-distutils
